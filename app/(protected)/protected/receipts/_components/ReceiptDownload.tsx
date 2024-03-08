@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 
 
 
-export default function InvoiceDownload() {
+export default function ReceiptDownload() {
   return (
     <Dialog>
     <DialogTrigger asChild>
@@ -21,9 +21,9 @@ export default function InvoiceDownload() {
     </DialogTrigger>
     <DialogContent className="w-[90vw]">
       <DialogHeader>
-        <DialogTitle>Invoice PDF Download</DialogTitle>
+        <DialogTitle>Receipt PDF Download</DialogTitle>
         <DialogDescription>
-          Hi there let's get you that pdf version of this invoice. Just click below 
+          Hi there let's get you that pdf version of this receipt. Just click below 
         </DialogDescription>
       </DialogHeader>
       <DialogFooter>

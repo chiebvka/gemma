@@ -1,13 +1,10 @@
 "use client"
 
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
-import React, { useState } from 'react';
-import InvoiceShare from './InvoiceShare';
-import InvoicePreview from './InvoicePreview';
-import InvoiceDownload from './InvoiceDownload';
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
     Form,
@@ -29,7 +26,6 @@ import {
     TableRow,
   } from "@/components/ui/table";
 import { useFieldArray, useForm } from 'react-hook-form';
-import { InvoiceEditFormSchema } from '../../../../../lib/validation/invoice';
 import * as z from "zod";
 import { Input } from '@/components/ui/input';
 import { BadgeDollarSign, CalendarDays, Plus, UploadCloud, XIcon } from 'lucide-react';
@@ -47,53 +43,54 @@ import {
      CardTitle,
     } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
+import { ReceiptEditFormSchema } from '@/lib/validation/receipt';
+import ReceiptDownload from './ReceiptDownload';
+import ReceiptPreview from './ReceiptPreview';
+import ReceiptShare from './ReceiptShare';
 
 type Props = {}
 export const dynamic = "force-dynamic";
 
-type InvoiceEditFormValues = z.infer<typeof InvoiceEditFormSchema>;
+type ReceiptEditFormValues = z.infer<typeof ReceiptEditFormSchema>;
 
-export default function InvoiceForm({}: Props) {
-
+export default function ReceiptForms({}: Props) {
     const router = useRouter();
-  const [isSwitchChecked, setIsSwitchChecked] = useState(true);
-  const [date, setDate] = React.useState<Date | undefined>(new Date())
+    const [isSwitchChecked, setIsSwitchChecked] = useState(true);
+    const [date, setDate] = React.useState<Date | undefined>(new Date())
+    
   
+    const defaultValues: Partial<ReceiptEditFormValues> = {
+      receiptItems: [
+          {itemName: "First Item", itemQuantity: 1, itemPrice: 200.00, itemAmount: 200.00},
+          {itemName: "Second Item", itemQuantity: 2, itemPrice: 189.00,  itemAmount: 374.22},
+      ],
+      branding: "",
+      senderName: "",
+      senderEmail: "",
+      senderAddress: "",
+      senderPhone: 0,
+      receipientName: "",
+      receipientEmail: "",
+      receipientPhone: 0,
+      itemQuantity: 0,
+      itemAmount: 0,
+      receipientAddress: "",
+      receiptID: "",
+      dueDate: "",
+      itemName: "",
+      receiptNote: "",
 
-  const defaultValues: Partial<InvoiceEditFormValues> = {
-    invoiceItems: [
-        {itemName: "First Item", itemQuantity: 1, itemPrice: 200.00, itemAmount: 200.00},
-        {itemName: "Second Item", itemQuantity: 2, itemPrice: 189.00,  itemAmount: 374.22},
-    ],
-    branding: "",
-    senderName: "",
-    senderEmail: "",
-    senderAddress: "",
-    senderPhone: 0,
-    receipientName: "",
-    receipientEmail: "",
-    receipientPhone: 0,
-    itemQuantity: 0,
-    itemAmount: 0,
-    receipientAddress: "",
-    InvoiceID: "",
-    dueDate: "",
-    itemName: "",
-    InvoiceNote: "",
-    paymentLink: "",
-  }
-  const form = useForm<InvoiceEditFormValues>({
-    resolver: zodResolver(InvoiceEditFormSchema),
-    defaultValues,
-  })
-
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-
-    name: "invoiceItems" // Assuming your array of items is named "items"
-  });
-
-
+    }
+    const form = useForm<ReceiptEditFormValues>({
+      resolver: zodResolver(ReceiptEditFormSchema),
+      defaultValues,
+    })
+  
+    const { fields, append, remove } = useFieldArray({
+      control: form.control,
+  
+      name: "receiptItems" // Assuming your array of items is named "items"
+    });
 
 
   const handleSwitchChange = (event: any) => {
@@ -101,7 +98,7 @@ export default function InvoiceForm({}: Props) {
   };
   return (
     <>
-        <div className='w-full'>
+    <div className='w-full'>
             <Form {...form}>
                 <form action={""}>                    
                     <div className="flex flex-col space-y-2 md:flex-row w-full items-start  justify-between">
@@ -126,9 +123,9 @@ export default function InvoiceForm({}: Props) {
                             </div>
                         </div>
                         <div className="flex w-full md:justify-end justify-center  space-x-3 my-auto ml-auto ">
-                            <InvoiceDownload />
-                            <InvoicePreview />
-                            <InvoiceShare />
+                            <ReceiptDownload />
+                            <ReceiptPreview />
+                            <ReceiptShare />
                         </div>
                     </div>
                     <Separator className='my-5' />
@@ -284,7 +281,7 @@ export default function InvoiceForm({}: Props) {
                             </div>
                         </div>
                         <div className="flex flex-col space-x-3 mt-3 p-2 ">
-                            <p className="font-bold">Due Date: </p>
+                            <p className="font-bold">Issue Date: </p>
                             <FormField
                                 control={form.control}
                                 name="dueDate"
@@ -303,7 +300,7 @@ export default function InvoiceForm({}: Props) {
                                             {field.value ? (
                                                 format(field.value, "PPP")
                                             ) : (
-                                                <span>Pick a due date</span>
+                                                <span>Pick an issue date</span>
                                             )}
                                             <CalendarDays className="ml-auto h-4 w-4 opacity-50" />
                                             </Button>
@@ -340,7 +337,7 @@ export default function InvoiceForm({}: Props) {
                                 <TableCell className='flex basis-3/6'>
                                 <FormField
                                     control={form.control}
-                                    name={`invoiceItems.${index}.itemName`}
+                                    name={`receiptItems.${index}.itemName`}
                                     render={({field}) => (
                                     <FormItem className='w-full'>     
                                         <FormControl>
@@ -354,14 +351,14 @@ export default function InvoiceForm({}: Props) {
                                 <TableCell className='flex basis-1/6'>
                                 <FormField
                                     control={form.control}
-                                    name={`invoiceItems.${index}.itemQuantity`}
+                                    name={`receiptItems.${index}.itemQuantity`}
                                     render={({field}) => (
                                     <FormItem className='w-full'>     
                                         <FormControl>
                                         <Input type='number' placeholder="Quantity" {...field} onChange={(e) => {
                                             const quantity = parseInt(e.target.value);
-                                            const price = parseFloat(form.getValues(`invoiceItems.${index}.itemPrice`).toString());
-                                            form.setValue(`invoiceItems.${index}.itemAmount`, quantity * price);
+                                            const price = parseFloat(form.getValues(`receiptItems.${index}.itemPrice`).toString());
+                                            form.setValue(`receiptItems.${index}.itemAmount`, quantity * price);
                                             field.onChange(e);
                                         }} />
                                         {/* <Input type='number' placeholder="Quantity" {...field} onChange={(e) => handleItemQuantityChange(index, parseInt(e.target.value))} /> */}
@@ -374,14 +371,14 @@ export default function InvoiceForm({}: Props) {
                                 <TableCell className='flex basis-1/6'>
                                 <FormField
                                     control={form.control}
-                                    name={`invoiceItems.${index}.itemPrice`}
+                                    name={`receiptItems.${index}.itemPrice`}
                                     render={({field}) => (
                                     <FormItem className='w-full'>     
                                         <FormControl>
                                         <Input type='number' placeholder="Price" {...field} onChange={(e) => {
                                             const price = parseFloat(e.target.value);
-                                            const quantity = parseInt(form.getValues(`invoiceItems.${index}.itemQuantity`).toString());
-                                            form.setValue(`invoiceItems.${index}.itemAmount`, quantity * price);
+                                            const quantity = parseInt(form.getValues(`receiptItems.${index}.itemQuantity`).toString());
+                                            form.setValue(`receiptItems.${index}.itemAmount`, quantity * price);
                                             field.onChange(e);
                                         }} />
                                         {/* <Input type='number' placeholder="Price" {...field} onChange={(e) => handleItemPriceChange(index, parseFloat(e.target.value))}  /> */}
@@ -395,7 +392,7 @@ export default function InvoiceForm({}: Props) {
                                 <TableCell className='flex basis-1/6'>
                                 <FormField
                                     control={form.control}
-                                    name={`invoiceItems.${index}.itemAmount`}
+                                    name={`receiptItems.${index}.itemAmount`}
                                     render={({field}) => (
                                     <FormItem className='w-full'>     
                                         <FormControl>
@@ -444,7 +441,7 @@ export default function InvoiceForm({}: Props) {
                         <div className="flex w-full space-y-3 mt-3 p-2">
                             <FormField
                                 control={form.control}
-                                name="InvoiceNote"
+                                name="receiptNote"
                                 render={({ field }) => (
                                     <FormItem>
                                     <FormLabel>Notes</FormLabel>
@@ -464,26 +461,6 @@ export default function InvoiceForm({}: Props) {
                             />
                         </div>
 
-                        <Card className='my-3 w-1/3'>
-                            <CardHeader>
-                                <CardTitle>Payment Method</CardTitle>
-                                <CardDescription>
-                                Please click the button below to make your payement 
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                            <div>
-               
-                                <Label
-                                htmlFor="paypal"
-                                className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                                >
-                                <BadgeDollarSign className="mb-3 h-6 w-6" />
-                                Paypal
-                                </Label>
-                            </div>
-                            </CardContent>
-                        </Card>
                         <div className="h-8 rounded-b-lg mb-3 bg-black w-full"></div>
                     </div>
                     <div className="infline-flex flex my-5 items-center justify-end space-x-3">
@@ -505,7 +482,6 @@ export default function InvoiceForm({}: Props) {
                     </div>
                 </form>
             </Form>
-        </div>
-    </>
+        </div></>
   )
 }

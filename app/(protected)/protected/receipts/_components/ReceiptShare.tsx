@@ -11,38 +11,38 @@ import { Copy } from 'lucide-react';
 
 type Props = {}
 
-export default function InvoiceShare({}: Props) {
+export default function ReceiptShare({}: Props) {
   return (
     <Popover>
-      <PopoverTrigger asChild>
+        <PopoverTrigger asChild>
         <Button variant="secondary">Share</Button>
-      </PopoverTrigger>
-      <PopoverContent align="end" className="min-w-[40vw] max-w-[90vw]">
+        </PopoverTrigger>
+        <PopoverContent align="end" className="min-w-[40vw] max-w-[90vw]">
         <div className="flex flex-col space-y-2 text-center sm:text-left">
-          <h3 className="text-lg font-semibold">Share preset</h3>
-          <p className="md:text-sm text-xs text-muted-foreground">
+            <h3 className="text-lg font-semibold">Share preset</h3>
+            <p className="md:text-sm text-xs text-muted-foreground">
             Anyone who has this link and an OpenAI account will be able to view
             this.
-          </p>
+            </p>
         </div>
         <div className="flex items-center space-x-2 pt-4">
-          <div className="grid flex-1 gap-2">
+            <div className="grid flex-1 gap-2">
             <Label htmlFor="link" className="sr-only">
-              Link
+                Link
             </Label>
             <Input
-              id="link"
-              defaultValue="https://platform.openai.com/playground/p/7bbKYQvsVkNmVb8NGcdUOLae?model=text-davinci-003"
-              readOnly
-              className="h-9"
+                id="link"
+                defaultValue="https://platform.openai.com/playground/p/7bbKYQvsVkNmVb8NGcdUOLae?model=text-davinci-003"
+                readOnly
+                className="h-9"
             />
-          </div>
-          <Button type="submit" size="sm" className="px-3">
+            </div>
+            <Button type="submit" size="sm" className="px-3">
             <span className="sr-only">Copy</span>
             <Copy className="h-4 w-4" />
-          </Button>
+            </Button>
         </div>
-      </PopoverContent>
+        </PopoverContent>
     </Popover>
   )
 }

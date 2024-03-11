@@ -23,6 +23,9 @@ export const ReceiptEditFormSchema = z.object({
     itemName: z.string().min(2, {message: "Item name must be 2 or more characters long"}),
     itemQuantity: z.number(),
     itemAmount: z.number(),
+    taxAmount: z.number().optional() ,
+    itemSubtotal: z.number().optional(),
+    itemTotal: z.number().gte(1).lte(100).optional(),
     receiptNote: z.string().optional(),
 
 })

@@ -47,6 +47,8 @@ const data: Payment[] = [
   },
 ]
 
+
+
 export default function page({}: Props) {
   return (
     <div  className="flex-1 w-full p-4 max-w-5xl mx-auto border-2 border-green-600 flex flex-col space-x-2 items-center">
@@ -54,7 +56,7 @@ export default function page({}: Props) {
       {emptystate === false ? 
         <EmptyStates title="Empty Data set" description="Seems like you haven't created any invoice or receipt yet" buttonLink="/protected/receipts/create" imageSrc="/dashempty.png"  buttonTitle="Get Started" /> :
         <div className='w-full'>
-        <PageHeadings title='Receipts' description='Here is a list of your paid invoices' buttonLink='/protected/receipts/create' buttonTitle='Create Receipt' />
+        <PageHeadings title='Receipts' description='Here is a list of your paid invoices or you can create a receipt for an offline payment' buttonLink='/protected/receipts/create' buttonTitle='Create Receipt' />
         <DataTable columns={columns} data={data? data : []} />
       </div>
       }

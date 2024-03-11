@@ -16,6 +16,8 @@ import RecepientsCard from "../_components/RecepientsCard";
 import DashDesign from "../_components/DashDesign";
 import CardLoading from "@/components/CardLoading";
 import DesignLoading from "@/components/DesignLoading";
+import { Rocket } from "lucide-react";
+import DashboardChecks from "../_components/DashboardChecks";
 
 const people = [
   {
@@ -68,12 +70,25 @@ export default async function ProtectedPage() {
   return (
     <div className="flex-1 w-full p-4 space-y-3 max-w-5xl mx-auto border-2 border-green-600 flex flex-col space-x-2 items-center">
       <TrendData />
+      <div className="flex">
+        <Card className="col-span-4 border-2 border-black bg-yellow-200/80 shadow-lg text-primary">
+          <CardHeader>
+          
+            <CardTitle className="flex space-x-5"> <span>Almost Ready to go </span><Rocket /> </CardTitle>
+          </CardHeader>
+          <CardContent className="pl-2 w-full">
+            {/* <Overview /> */}
+            <DashboardChecks />
+          </CardContent>
+        </Card>
+      </div>
       <div className="grid gap-4  w-full border-2 border-black grid-cols-1 md:grid-cols-2">
         <DashDesign title="Invoice design" description="This is your current invoice design" imageSrc="/orders.png" designLink="" />
         <DashDesign title="Invoice design" description="This is your current invoice design" imageSrc="/orders.png" designLink="" />
       </div>
       <CardLoading />
       <DesignLoading />
+
       <div className="grid gap-4  w-full border-2 border-black grid-cols-1 md:grid-cols-2">
         <Card className="">
           <CardHeader>

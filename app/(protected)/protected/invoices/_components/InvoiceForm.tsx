@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import InvoiceShare from './InvoiceShare';
 import InvoicePreview from './InvoicePreview';
 import InvoiceDownload from './InvoiceDownload';
@@ -56,14 +56,15 @@ type InvoiceEditFormValues = z.infer<typeof InvoiceEditFormSchema>;
 export default function InvoiceForm({}: Props) {
 
     const router = useRouter();
-  const [isSwitchChecked, setIsSwitchChecked] = useState(true);
-  const [date, setDate] = React.useState<Date | undefined>(new Date())
+    const [isSwitchChecked, setIsSwitchChecked] = useState(true);
+    const [date, setDate] = React.useState<Date | undefined>(new Date())
+    const [invoiceNumber, setInvoiceNumber] = useState<string | null>(null);
   
 
   const defaultValues: Partial<InvoiceEditFormValues> = {
     invoiceItems: [
         {itemName: "First Item", itemQuantity: 1, itemPrice: 200.00, itemAmount: 200.00},
-        {itemName: "Second Item", itemQuantity: 2, itemPrice: 189.00,  itemAmount: 374.22},
+        {itemName: "Second Item", itemQuantity: 2, itemPrice: 189.00,  itemAmount: 378.00},
     ],
     branding: "",
     senderName: "",
@@ -92,6 +93,19 @@ export default function InvoiceForm({}: Props) {
 
     name: "invoiceItems" // Assuming your array of items is named "items"
   });
+
+    const generateInvoiceNumber = (minimum: number, maximum: number) => {
+        const randomNumber = Math.floor(Math.random() * (maximum - minimum)) + minimum;
+        return 'INV-' + randomNumber;
+    }
+
+    useEffect(() => {
+        if (!invoiceNumber) {
+            const newInvoiceNumber = generateInvoiceNumber(17890, 577890);
+            setInvoiceNumber(newInvoiceNumber);
+            form.setValue("InvoiceID", newInvoiceNumber);
+        }
+    }, [invoiceNumber, form]);
 
 
 
@@ -134,7 +148,7 @@ export default function InvoiceForm({}: Props) {
                     <Separator className='my-5' />
                     <div className="">
                         <div className="h-8 rounded-t-lg bg-black w-full"></div>
-                        <div className="flex md:flex-row flex-col space-x-3 gap-2 p-2">
+                        <div className="flex md:flex-row flex-col-reverse space-x-3 gap-2 p-2">
                             <div className="flex basis-1/2 space-y-3 flex-col">         
                                 <div className="flex-col space-y-3">
                                     <h4 className='font-bold text-lg'>Bill To:</h4>
@@ -240,26 +254,28 @@ export default function InvoiceForm({}: Props) {
                                 </div> */}
                             </div>
                             <div className="flex basis-1/2 space-y-3 flex-col">
-                                <div className="flex flex-col justify-end border-l-2 border-black ">
+                                <div className="flex flex-col justify-end my-3 md:border-l-2 border-black ">
                                     <FormField
                                         control={form.control}
                                         name="branding"
                                         render={({field}) => (
-                                        <label htmlFor='branding' className='flex justify-end '>
-                                            <FormItem className=' flex justify-end border-2 border-dashed rounded border-black  p-3 space-y-2 '>     
-                                                <FormControl>
-                                                    <div className="flex flex-col cursor-pointer items-center justify-center  border-dashed border-gray-400 rounded">
-                                                        <div className="text-center">
-                                                            <FormLabel htmlFor="branding" className="flex flex-col items-center gap-2 cursor-pointer"></FormLabel>
-                                                            <UploadCloud className='mx-auto text-black' aria-hidden='true' size={20} />
-                                                            <span className='text-xs'>Upload your logo</span>
-                                                            <Input type='file' id="branding"  className='sr-only' {...field} />
-                                                        </div>
-                                                    </div>
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        </label>
+                                            <div  className='flex justify-end '>
+                                                <FormItem className=' flex justify-center items-center border-2 border-dashed rounded border-black size-32  space-y-2'>   
+                                                    <label htmlFor='branding' className='flex justify-end '>
+                                                        <FormControl>
+                                                            <div className="flex flex-col cursor-pointer items-center justify-center  border-dashed border-gray-400 rounded">
+                                                                <div className="text-center">
+                                                                    <FormLabel htmlFor="branding" className="flex flex-col items-center gap-2 cursor-pointer"></FormLabel>
+                                                                    <UploadCloud className='mx-auto text-black' aria-hidden='true' size={20} />
+                                                                    <span className='text-xs'>Upload your logo</span>
+                                                                    <Input type='file' id="branding"  className='sr-only' {...field} />
+                                                                </div>
+                                                            </div>
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </label>  
+                                                </FormItem>
+                                            </div>
                                         )}
                                     />
                                     <div className="flex justify-end">
@@ -272,11 +288,23 @@ export default function InvoiceForm({}: Props) {
 
                                     </div>
 
-                                    <div className="flex space-x-2 mt-3 justify-end">
+                                    <div className="flex items-center space-x-2 mt-3 justify-end">
                                         <p className="font-bold">Invoice Number: </p>
-                                        <div className="border px-3 border-black">
+                                        <FormField
+                                            control={form.control}
+                                            name="InvoiceID"
+                                            render={({field}) => (
+                                                <FormItem className=' w-48 space-y-2 '>     
+                                                    <FormControl>
+                                                    <Input placeholder="Client or Business Name" {...field} readOnly />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        {/* <div className="border px-3 border-black">
                                             INV 00012
-                                        </div>
+                                        </div> */}
                                     </div>
                   
 
@@ -399,7 +427,7 @@ export default function InvoiceForm({}: Props) {
                                     render={({field}) => (
                                     <FormItem className='w-full'>     
                                         <FormControl>
-                                        <Input type='number' placeholder="Price" {...field} readOnly />
+                                        <Input type='number' placeholder="Amount" {...field} readOnly />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

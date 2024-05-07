@@ -514,7 +514,7 @@ export default function InvoiceForm({}: Props) {
                         </Card>
                         <div className="h-8 rounded-b-lg mb-3 bg-black w-full"></div>
                     </div>
-                    <div className="infline-flex flex my-5 items-center justify-end space-x-3">
+                    <div className=" flex my-5 items-center justify-end space-x-3">
                         <Button
                         type="submit"
                         className="flex !bg-gray-900 px-10 !text-white hover:!bg-gray-800"

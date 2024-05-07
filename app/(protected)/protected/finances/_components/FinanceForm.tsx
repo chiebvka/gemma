@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react';
+import React, { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -13,6 +13,12 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import {
+    Tabs,
+    TabsContent,
+    TabsList,
+    TabsTrigger,
+  } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
@@ -33,12 +39,21 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { FinanceFormSchema } from '@/lib/validation/finance';
 import { Icons } from '@/components/icons';
+import Link from 'next/link';
 
 type Props = {}
 type FinanceFormValues = z.infer<typeof FinanceFormSchema>
 
 export default function FinanceForm({}: Props) {
 
+
+    const [selectedProcessor, setSelectedProcessor] = useState('')
+    const [onboardingUrl, setOnboardingUrl] = useState('')
+
+    const handleProcessorChange = (e: React.FormEvent<HTMLButtonElement>) => {
+        setSelectedProcessor(e.currentTarget.value)
+    }
+    
     const defaultValues:Partial<FinanceFormValues> = {
         isActive: false
     }
@@ -47,124 +62,60 @@ export default function FinanceForm({}: Props) {
         defaultValues
 
     })
+
+
+    const handleonboardingurl = async (event: React.MouseEvent<HTMLButtonElement>) => {
+        if(selectedProcessor === "paypal"){
+            setOnboardingUrl('https://www.paypal.com')
+        } else if (selectedProcessor === 'stripe') {
+            setOnboardingUrl('https://www.stripe.com')
+        }
+    }
+
+
   return (
     <div className='w-full'>
-        <Form {...form}>
-            <form action="">
-                <Card className='rounded-lg'>
-                    <CardHeader>
-                        <CardTitle>Payment Method</CardTitle>
-                        <CardDescription>
-                        Add a new payment method to your account.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="grid gap-6">
-                        <RadioGroup defaultValue="card" className="grid grid-cols-3 gap-4">
-                        <div>
-                            <RadioGroupItem value="card" id="card" className="peer sr-only" />
-                            <Label
-                            htmlFor="card"
-                            className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                            >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                className="mb-3 h-6 w-6"
-                            >
-                                <rect width="20" height="14" x="2" y="5" rx="2" />
-                                <path d="M2 10h20" />
-                            </svg>
-                            Card
-                            </Label>
-                        </div>
-                        <div>
-                            <RadioGroupItem
-                            value="paypal"
-                            id="paypal"
-                            className="peer sr-only"
-                            />
-                            <Label
-                            htmlFor="paypal"
-                            className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                            >
+            <Tabs defaultValue="stripe" className='border-2 border-red-500 space-y-4  rounded-lg'>
+                <div className="border-black border-2 flex w-full">
+                    <TabsList className="grid grid-cols-3 w-full  gap-30 border-2 bg-white h-auto border-green-300">
+                        <TabsTrigger value="stripe" className='flex flex-col border-2 border-yellow-500 '>
+                            <span className="sr-only">Complete</span>
+                            <Icons.stripe className="mb-3 h-6 w-6" />
+                            Stripe
+                        </TabsTrigger>
+                        <TabsTrigger value="paypal" className='flex flex-col border-2 border-yellow-500 '>
+                            <span className="sr-only">Complete</span>
                             <Icons.paypal className="mb-3 h-6 w-6" />
                             Paypal
-                            </Label>
-                        </div>
-                        <div>
-                            <RadioGroupItem value="apple" id="apple" className="peer sr-only" />
-                            <Label
-                            htmlFor="apple"
-                            className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                            >
-                            <Icons.apple className="mb-3 h-6 w-6" />
-                            Apple
-                            </Label>
-                        </div>
-                        </RadioGroup>
-                        <div className="grid gap-2">
-                        <Label htmlFor="name">Name</Label>
-                        <Input id="name" placeholder="First Last" />
-                        </div>
-                        <div className="grid gap-2">
-                        <Label htmlFor="number">Card number</Label>
-                        <Input id="number" placeholder="" />
-                        </div>
-                        <div className="grid grid-cols-3 gap-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="month">Expires</Label>
-                            <Select>
-                            <SelectTrigger id="month">
-                                <SelectValue placeholder="Month" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="1">January</SelectItem>
-                                <SelectItem value="2">February</SelectItem>
-                                <SelectItem value="3">March</SelectItem>
-                                <SelectItem value="4">April</SelectItem>
-                                <SelectItem value="5">May</SelectItem>
-                                <SelectItem value="6">June</SelectItem>
-                                <SelectItem value="7">July</SelectItem>
-                                <SelectItem value="8">August</SelectItem>
-                                <SelectItem value="9">September</SelectItem>
-                                <SelectItem value="10">October</SelectItem>
-                                <SelectItem value="11">November</SelectItem>
-                                <SelectItem value="12">December</SelectItem>
-                            </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="year">Year</Label>
-                            <Select>
-                            <SelectTrigger id="year">
-                                <SelectValue placeholder="Year" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {Array.from({ length: 10 }, (_, i) => (
-                                <SelectItem key={i} value={`${new Date().getFullYear() + i}`}>
-                                    {new Date().getFullYear() + i}
-                                </SelectItem>
-                                ))}
-                            </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="cvc">CVC</Label>
-                            <Input id="cvc" placeholder="CVC" />
-                        </div>
-                        </div>
-                    </CardContent>
-                    <CardFooter>
-                        <Button className="w-full">Continue</Button>
-                    </CardFooter>
-                </Card>
-            </form>
-        </Form>
+                        </TabsTrigger>
+                        <TabsTrigger value="lemonsqueezy" className='flex flex-col border-2 border-yellow-500 '>
+                            <span className="sr-only">Complete</span>
+                            <Icons.lemon className="mb-3 h-6 w-6" />
+                            Lemon Squezy
+                        </TabsTrigger>
+                    </TabsList>
+                </div>
+                <div className="border-black border-2  w-full">
+                    <TabsContent value="stripe" className="space-y-4 flex w-10/12 mx-auto flex-col mt-0 border-0 p-0 ">
+                        <p className='w-full '>Connect your <span className="text-violet-600">Stripe</span>  account and receive paymengts directly from your invoice into your account</p>
+                        <Button  className="w-full  bg-violet-600" >
+                            <Link href={onboardingUrl}>Connect </Link> 
+                        </Button>
+                    </TabsContent>
+                    <TabsContent value="paypal" className="space-y-4 flex w-10/12 mx-auto flex-col mt-0 border-0 p-0 "> 
+                    <p className='w-full '>Connect your <span className='text-[#0079C1]'>Paypal</span> account and receive paymengts directly from your invoice into your account</p>
+                        <Button  className="w-full bg-[#0079C1]" >
+                            <Link href='/'>Connect </Link> 
+                        </Button>
+                    </TabsContent>
+                    <TabsContent value="lemonsqueezy" className="space-y-4 flex w-10/12 mx-auto flex-col mt-0 border-0 p-0 "> 
+                    <p className='w-full '>Connect your <span className='text-[#FFCE5C]'>Lemonsqueezy</span> account and receive paymengts directly from your invoice into your account</p>
+                        <Button  className="w-full bg-[#FFCE5C] text-black" >
+                            <Link href={onboardingUrl}>Connect </Link> 
+                        </Button>
+                    </TabsContent>
+                </div>
+            </Tabs>
     </div>
   )
 }

@@ -21,6 +21,6 @@ export default function CreateHeadings({title, description}: HeadingProps) {
         </div>
         <Separator className='my-2' />
 
-  </div>
+    </div>
   )
 }

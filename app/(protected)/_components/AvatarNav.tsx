@@ -18,6 +18,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 
 
 type Props = {}
@@ -62,12 +63,20 @@ export default async function AvatarNav({}: Props) {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            Dashboard
+            <Link href="/" className='cursor-pointer w-full'>
+              Dashboard
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            Settings
+            <Link href="/" className='cursor-pointer w-full'>
+              Settings
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>New Team</DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link href="/protected/setup" className='cursor-pointer w-full'>
+              Setup
+            </Link>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem className=''>

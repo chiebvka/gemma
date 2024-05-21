@@ -8,7 +8,7 @@ type Props = {}
 
 export default function DesktopHeader({}: Props) {
   return (
-    <div className=''>
+    <div className='w-full'>
       <div className="w-full">
         <Banner  label="Please select a invoice or recipt layout to go with." />
         {/* <div className="py-6 w-full font-bold bg-purple-950 text-center">

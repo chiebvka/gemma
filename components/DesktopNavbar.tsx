@@ -2,11 +2,11 @@
 
 import { protectedNavLinks } from '@/config'
 import { cn } from '@/lib/utils'
-import { ScrollArea } from '@radix-ui/react-scroll-area'
+
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React from 'react'
-import { ScrollBar } from './ui/scroll-area'
+import { ScrollArea, ScrollBar } from './ui/scroll-area'
 
 interface ExamplesNavProps extends React.HTMLAttributes<HTMLDivElement> {}
 

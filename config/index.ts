@@ -48,3 +48,29 @@ export const protectedNavLinks = [
         links: "/faq"
     },
 ]
+
+
+export const setups = [
+
+    {
+        id: 1,
+        name: 'Profile',
+        href: '/protected/setup/'
+    },
+    {
+        id: 2,
+        name: 'Subscription',
+        href: '/protected/setup/subscription'
+    },
+    {
+        id: 3,
+        name: 'Payments',
+        href: '/protected/setup/processor'
+    },
+    {
+        id: 4,
+        name: 'Support',
+        href: '/protected/setup/support'
+    },
+
+]

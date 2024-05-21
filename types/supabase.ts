@@ -176,11 +176,11 @@ export type Database = {
         Row: {
           companyAddress: string | null
           companyEmail: string | null
-          companyMobile: number | null
+          companyMobile: string | null
           companyName: string | null
           connectedAccountId: string | null
           created_at: string
-          customerId: string | null
+          stripe_customer_id: string | null
           email: string | null
           id: string
           logoLink: string | null
@@ -191,11 +191,11 @@ export type Database = {
         Insert: {
           companyAddress?: string | null
           companyEmail?: string | null
-          companyMobile?: number | null
+          companyMobile?: string | null
           companyName?: string | null
           connectedAccountId?: string | null
           created_at?: string
-          customerId?: string | null
+          stripe_customer_id?: string | null
           email?: string | null
           id?: string
           logoLink?: string | null
@@ -206,11 +206,11 @@ export type Database = {
         Update: {
           companyAddress?: string | null
           companyEmail?: string | null
-          companyMobile?: number | null
+          companyMobile?: string | null
           companyName?: string | null
           connectedAccountId?: string | null
           created_at?: string
-          customerId?: string | null
+          stripe_customer_id?: string | null
           email?: string | null
           id?: string
           logoLink?: string | null

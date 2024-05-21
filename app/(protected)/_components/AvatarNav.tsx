@@ -38,7 +38,7 @@ export default async function AvatarNav({}: Props) {
   
       const supabase = createClient();
       await supabase.auth.signOut();
-      return redirect("/login");
+      return redirect("/");
     };
   
   return (

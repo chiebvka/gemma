@@ -21,9 +21,10 @@ export default async function ProtectedLayout({
     }
   
   return (
-    <div className='w-full'>
+    <div className='w-full bg-muted/40'>
       <DesktopHeader />
         {children}
+        
     </div>
   )
 }

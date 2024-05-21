@@ -21,7 +21,7 @@ type CheckoutResponse = {
 
   export async function checkoutWithStripe(
     price: Price,
-    redirectPath: string = '/account'
+    redirectPath: string = '/protected'
   ): Promise<CheckoutResponse> {
     try {
       // Get the user from Supabase auth
@@ -153,7 +153,7 @@ type CheckoutResponse = {
       try {
         const { url } = await stripe.billingPortal.sessions.create({
           customer,
-          return_url: getURL('/account')
+          return_url: getURL('/protected/setup')
         });
         if (!url) {
           throw new Error('Could not create billing portal');

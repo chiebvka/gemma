@@ -130,7 +130,7 @@ export const Icons = {
     </svg>
   ),
   paystack: (props: IconProps) => (
-    <svg  xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 28.87 28.87">
+    <svg role="img" {...props}    viewBox="0 0 28.87 28.87">
     <g>
      <g>
       <path fill="#00C3F7" width="28.87" d="M39.9,0H2.3C1.1,0,0,1.1,0,2.4v4.2C0,7.9,1.1,9,2.3,9h37.6c1.3,0,2.3-1.1,2.4-2.4V2.4C42.3,1.1,41.2,0,39.9,0

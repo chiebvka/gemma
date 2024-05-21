@@ -1,0 +1,236 @@
+'use client'
+import React, { useState }  from 'react'
+import { cn } from '@/lib/utils';
+import { getErrorRedirect } from '@/utils/helpers';
+import { useRouter, usePathname } from 'next/navigation';
+import { checkoutWithStripe } from '@/lib/stripe/stripeAction';
+import { getStripe } from '@/lib/stripe/stripeClient';
+import type { Tables} from '@/types/supabase';
+import { User } from '@supabase/supabase-js';
+import { Button } from '@/components/ui/button';
+import { CheckIcon } from 'lucide-react';
+
+type Subscription = Tables<'subscriptions'>;
+type Product = Tables<'products'>;
+type Price = Tables<'prices'>;
+interface ProductWithPrices extends Product {
+  prices: Price[];
+}
+interface PriceWithProduct extends Price {
+  products: Product | null;
+}
+interface SubscriptionWithProduct extends Subscription {
+  prices: PriceWithProduct | null;
+}
+
+interface Props {
+  user: User | null | undefined;
+  products: ProductWithPrices[];
+  subscription: SubscriptionWithProduct | null;
+}
+
+type BillingInterval = 'lifetime' | 'year' | 'month';
+
+export default function Pricing({ user, products, subscription }: Props) {
+
+    const intervals = Array.from(
+        new Set(
+          products.flatMap((product) =>
+            product?.prices?.map((price) => price?.interval)
+          )
+        )
+      );
+      const router = useRouter();
+      const [billingInterval, setBillingInterval] =
+        useState<BillingInterval>('month');
+      const [priceIdLoading, setPriceIdLoading] = useState<string>();
+      const currentPath = usePathname();
+    
+      const handleStripeCheckout = async (price: Price) => {
+        setPriceIdLoading(price.id);
+    
+        if (!user) {
+          setPriceIdLoading(undefined);
+          return router.push('/login');
+        }
+    
+        const { errorRedirect, sessionId } = await checkoutWithStripe(
+          price,
+          currentPath
+        );
+    
+        if (errorRedirect) {
+          setPriceIdLoading(undefined);
+          return router.push(errorRedirect);
+        }
+    
+        if (!sessionId) {
+          setPriceIdLoading(undefined);
+          return router.push(
+            getErrorRedirect(
+              currentPath,
+              'An unknown error occurred.',
+              'Please try again later or contact a system administrator.'
+            )
+          );
+        }
+    
+        const stripe = await getStripe();
+        stripe?.redirectToCheckout({ sessionId });
+    
+        setPriceIdLoading(undefined);
+      };
+
+
+
+  if (!products.length) {
+    return (
+      <section className="bg-background text-foreground">
+        <div className="max-w-6xl px-4 py-8 mx-auto sm:py-24 sm:px-6 lg:px-8">
+          <div className="sm:flex sm:flex-col sm:align-center"></div>
+          <p className="text-4xl font-extrabold text-primary sm:text-center sm:text-6xl">
+            No subscription pricing plans found. Create them in your{' '}
+            <a
+              className="text-pink-500 underline"
+              href="https://dashboard.stripe.com/products"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Stripe Dashboard
+            </a>
+            .
+          </p>
+        </div>
+        {/* <LogoCloud /> */}
+      </section>
+    );
+  } else {
+    
+  return (
+    <section className="bg-background">
+    <div className="max-w-6xl px-4 py-8 mx-auto sm:py-24 sm:px-6 lg:px-8">
+      <div className="flex flex-col align-center">
+        <h1 className="text-3xl items-center font-extrabold text-center text-primary md:text-5xl">
+          Pricing Plans
+        </h1>
+        <p className="max-w-2xl m-auto mt-5 text-xl text-foreground text-center md:text-2xl">
+          Start building for free, then add a site plan to go live. Account
+          plans unlock additional features.
+        </p>
+        <div className="relative self-center mt-6 bg-slate-200 rounded-lg p-0.5 flex sm:mt-8 border-2 border-slate-800">
+          {intervals.includes('month') && (
+            <button
+              onClick={() => setBillingInterval('month')}
+              type="button"
+              className={`${
+                billingInterval === 'month'
+                  ? 'relative w-1/2 bg-slate-700 border-slate-800 shadow-sm text-background'
+                  : 'ml-0.5 relative w-1/2 border border-transparent text-black'
+              } rounded-md m-1 py-2 text-sm font-medium whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-50 focus:z-10 sm:w-auto sm:px-8`}
+            >
+              Monthly billing
+            </button>
+          )}
+          {intervals.includes('year') && (
+            <button
+              onClick={() => setBillingInterval('year')}
+              type="button"
+              className={`${
+                billingInterval === 'year'
+                  ? 'relative w-1/2 bg-slate-700 border-slate-800 shadow-sm text-background'
+                  : 'ml-0.5 relative w-1/2 border border-transparent text-black'
+              } rounded-md m-1 py-2 text-sm font-medium whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-black focus:ring-opacity-50 focus:z-10 sm:w-auto sm:px-8`}
+            >
+              Yearly billing
+            </button>
+          )}
+        </div>
+      </div>
+      <div className="mt-8 space-y-4 flex flex-wrap justify-center gap-6 lg:max-w-4xl lg:mx-auto xl:max-w-none xl:mx-0">
+        {products.map((product) => {
+          const price = product?.prices?.find(
+            (price) => price.interval === billingInterval
+          );
+          if (!price) return null;
+          const priceString = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: price.currency!,
+            minimumFractionDigits: 0
+          }).format((price?.unit_amount || 0) / 100);
+          return (
+            <div
+              key={product.id}
+              className={cn(
+                'flex flex-col rounded-lg shadow-sm divide-y divide-zinc-600 border-2 border-black',
+                {
+                  'border-2 border-black': subscription
+                    ? product.name === subscription?.prices?.products?.name
+                    : product.name === 'Freelancer'
+                },
+                'flex-1', // This makes the flex item grow to fill the space
+                'basis-1/3', // Assuming you want each card to take up roughly a third of the container's width
+                'max-w-xs' // Sets a maximum width to the cards to prevent them from getting too large
+              )}
+            >
+              <div className="p-6 space-y-3">
+              <div className="space-y-2">
+            <div className="inline-block rounded-lg bg-gray-100 px-3 py-1 text-sm dark:bg-gray-800">Pro</div>
+            <h3 className="text-2xl font-bold"> {priceString}/{billingInterval}</h3>
+            {/* <h3 className="text-2xl font-bold">  {product.name}</h3> */}
+            <p className="text-gray-500 capitalize line-clamp-2 dark:text-gray-400">{product.description}</p>
+          </div>
+          <ul className="space-y-3 text-sm">
+            <li>
+              <CheckIcon className="mr-2 inline-block h-4 w-4" />
+                Stripe Invoice and Receipts
+            </li>
+            <li>
+              <CheckIcon className="mr-2 inline-block h-4 w-4" />
+              Contracts
+            </li>
+            <li>
+              <CheckIcon className="mr-2 inline-block h-4 w-4" />
+              Advanced analytics
+            </li>
+            <li>
+              <CheckIcon className="mr-2 inline-block h-4 w-4" />
+              Priority email support
+            </li>
+          </ul>
+          <Button
+            loading={priceIdLoading === price.id}
+            onClick={() => handleStripeCheckout(price)} 
+            className="w-full"
+          >
+            {subscription ? 'Manage' : 'Subscribe'}
+          </Button>
+                {/* <h2 className="text-2xl font-semibold leading-6 text-primary">
+                  {product.name}
+                </h2>
+                <p className="mt-4 text-zinc-300">{product.description}</p>
+                <p className="mt-8">
+                  <span className="text-5xl font-extrabold white">
+                    {priceString}
+                  </span>
+                  <span className="text-base font-medium text-zinc-100">
+                    /{billingInterval}
+                  </span>
+                </p>
+                <Button
+                  type="button"
+                  loading={priceIdLoading === price.id}
+                  onClick={() => handleStripeCheckout(price)}
+                  className="block w-full py-2 mt-8 text-sm font-semibold text-center text-primary rounded-md hover:bg-zinc-900"
+                >
+                  {subscription ? 'Manage' : 'Subscribe'}
+                </Button> */}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+  )
+}
+}

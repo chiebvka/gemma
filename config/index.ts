@@ -44,8 +44,8 @@ export const protectedNavLinks = [
     },
     {
         id: 5,
-        name: 'FAQ',
-        links: "/faq"
+        name: 'Contracts',
+        links: "/protected/contracts"
     },
 ]
 

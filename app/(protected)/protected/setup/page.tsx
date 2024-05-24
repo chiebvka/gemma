@@ -25,6 +25,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import SubscriptionSetupForm from './subscription/_components/SubscriptionSetupForm';
 import { createClient } from '@/utils/supabase/server';
 import ProfileSetupForm from './_components/ProfileSetupForm';
+// import ImageForm from './_components/ImageForm';
 
 
 type Props = {}
@@ -54,6 +55,7 @@ if (error) {
     <div className="w-full">
         <div className="grid gap-6">
         <ProfileSetupForm userDetails={userDetails} />
+        {/* <ImageForm userDetails={userDetails} /> */}
         </div>
     </div>
   )

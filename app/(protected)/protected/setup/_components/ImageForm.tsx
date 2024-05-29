@@ -1,118 +1,188 @@
-// "use client"
+"use client"
 
-// import React, { useState } from 'react'
-// import Image from 'next/image';
-// import * as z from "zod";
-// import { ImageIcon, Pencil, PlusCircle } from 'lucide-react';
-// import { useRouter } from 'next/navigation';
-// import { Button } from "@/components/ui/button";
-// import FileUpload from '@/components/FileUpload';
-// import { Tables } from '@/types/supabase';
-// import {
-//   Form,
-//   FormControl,
-//   FormField,
-//   FormItem,
-//   FormLabel,
-//   FormMessage,
-// } from "@/components/ui/form";
-// import { createClient } from '@/utils/supabase/server';
-// import { useToast } from '@/components/ui/use-toast';
-// import { ProfileFormSchema } from '@/lib/validation/profile';
-// import { profileConfig } from '@/config/profile';
-// import { updateSetup } from '@/actions/setup/updateProfile';
-// import { useForm } from 'react-hook-form';
-// import { zodResolver } from '@hookform/resolvers/zod';
-
-
-// interface Props  {
-//   userDetails: Profile
-// }
-
-// type Profile = Tables<'profiles'>;
-
-// type ProfileFormValues = z.infer<typeof ProfileFormSchema>;
-
-// interface ImageFormProps {
-//     initialData: Profile;
-//     logoLink: string
-// }
+import React, { useState } from 'react'
+import Image from 'next/image';
+import * as z from "zod";
+import { ImageIcon, Pencil, PlusCircle } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import FileUpload from '@/components/FileUpload';
+import { Tables } from '@/types/supabase';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useToast } from '@/components/ui/use-toast';
+import { LogoFormSchema, ProfileFormSchema } from '@/lib/validation/profile';
+import { profileConfig } from '@/config/profile';
+import { updateBusinessLogo, updateSetup } from '@/actions/setup/updateProfile';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 
 
-// const formSchema = z.object({
-//     logoLink: z.string().min(2, {
-//       message: "Image is required",
-//     }),
-//   })
+interface Props  {
+  userDetails: Profile
+}
+
+type Profile = Tables<'profiles'>;
+
+type BusinessLogoFormValues = z.infer<typeof LogoFormSchema>;
+
+
+
+
   
 
-// export default function ImageForm({userDetails}: Props) {
-//     const supabase = createClient();
-//     const router = useRouter();
-//     const { toast } = useToast();
-//     const [isUpdating, setIsUpdating] = useState(false)
+export default function ImageForm({userDetails}: Props) {
+    const router = useRouter();
+    const { toast } = useToast();
+    const [isEditing, setIsEditing] = useState(false)
+    const [isUpdating, setIsUpdating] = useState(false)
 
-//     const toggleEdit = () => setIsUpdating((current) => !current)
+    const toggleEdit = () => setIsEditing((current) => !current)
 
-//     const defaultValues: Partial<ProfileFormValues> = {
-//       email: userDetails?.email || "",
-//       companyName: userDetails?.companyName || "",
-//       logoLink: userDetails?.logoLink || "",
-//       companyEmail: userDetails?.companyEmail || "",
-//       companyAddress: userDetails?.companyAddress || "",
-//       companyMobile: userDetails?.companyMobile || "",
+    const defaultValues: Partial<BusinessLogoFormValues> = {
+      logoLink: userDetails?.logoLink || "",
+
   
-//   };
+  };
 
-//   const form = useForm<ProfileFormValues>({
-//     resolver: zodResolver(ProfileFormSchema),
-//     defaultValues,
-//     mode: "onChange",
-// });
+  const form = useForm<BusinessLogoFormValues>({
+    resolver: zodResolver(LogoFormSchema),
+    defaultValues,
+    mode: "onChange",
+});
 
-// async function onSubmit(data:ProfileFormValues){
-//     setIsUpdating(true)
-//     const response = await updateSetup({
-//         id: userDetails.id,
-//         companyName: data.companyName ?? '',
-//         companyEmail: data.companyEmail ?? '',
-//         companyMobile: data.companyMobile ?? '',
-//         companyAddress: data.companyAddress ?? '',
-//         logoLink: data.logoLink ?? '',
-//     })    
-//     if (response) {
-//         toast({
-//             title: "Success",
-//             description: (profileConfig.successMessage),
-//           })
-//       } else {
-//         toast({
-//             variant: "destructive",
-//             title: "Uh oh! Something went wrong.",
-//             description: (profileConfig.errorMessage),
-//           })
-//       }
+async function onSubmit(data:BusinessLogoFormValues){
+    setIsUpdating(true)
+    try {
+      const response = await updateBusinessLogo({
+          id: userDetails.id,
+          logoLink: data.logoLink ?? '',
+      
+      })    
+      if (response) {
+          toast({
+              variant: "success",
+              title: "Success",
+              description: (profileConfig.successMessage),
+            })
+            location.reload()
+        } else {
+          toast({
+              variant: "destructive",
+              title: "Uh oh! Something went wrong.",
+              description: (profileConfig.errorMessage),
+            })
+        }
+  } catch (error) {
+      toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: (profileConfig.errorMessage),
+        })
+  }
   
-//       setIsUpdating(false);    
-// }
+      setIsUpdating(false);    
+}
     
-//   return (
-//     <Form {...form}>
-//         <form onSubmit={form.handleSubmit(onSubmit)}>
-//             <FileUpload 
-//               endpoint='imageUploader'
-//               onChange={(url) => {
-//                   if(url) {
-//                       onSubmit({
-//                         logoLink: '',
-//                         email: '',
-//                         companyName: '',
-//                         companyEmail: ''
-//                       })
-//                   }
-//               }}
-//           />
-//         </form>
-//     </Form>
-//   )
-// }
+  return (
+    <Card  className='mt-6 border bg-slate-100 border-black shadow-lg rounded-md'>
+       <CardHeader className="font-medium flex flex-row items-center justify-between">
+            Busiess Logo
+            <Button onClick={toggleEdit} variant="ghost">
+                {isEditing ? (
+                    <>Cancel</>
+                ): (
+                    <>
+                        <Pencil className='h-4 w-4 mr-2' />
+                        Edit Logo
+                    </>
+                )}
+            </Button>
+        </CardHeader>
+        <CardContent>
+        {!isEditing && (
+            !userDetails.logoLink ? (
+                <div className='flex items-center justify-center h-60 bg-slate-200 rounded-md'>
+                    <ImageIcon className='h-10 w-10 text-slate-500' />
+                </div>
+            ) : (
+                <div className='relative aspect-video border border-dashed border-black rounded-lg mt-2'>
+                <Image
+                        alt="upload"
+                        fill
+                        className='object-contain size-48 rounded-md'
+                        src={userDetails?.logoLink}
+                    />
+                </div>
+            )
+        )}
+        {isEditing && (
+          <Form {...form}>
+            <form 
+                onSubmit={form.handleSubmit(onSubmit)}
+                className='space-y-2 -mt-2'
+            >
+                <FormField
+                    control={form.control}
+                    name="logoLink"
+                    render={({ field }) => (
+                    <FormItem>
+                        {/* <FormLabel>{profileConfig.businessName}</FormLabel> */}
+                        <FormControl>
+                            <div>
+                                <FileUpload 
+                                    endpoint='imageUploader'
+                                    onChange={(url) => {
+                                        if(url) {
+                                          onSubmit({logoLink: url });
+                                        }
+                                        setIsEditing(false)
+                                    }}
+                                /> 
+                                <div className="text-xs text-muted-foreground mt-4">
+                                    16:9 aspect ratio recommended
+                                </div>
+                            </div>
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                    )}
+                />
+              </form>
+            </Form>
+        )}
+        </CardContent>
+      {/* <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+              <FileUpload 
+                endpoint='imageUploader'
+                onChange={(url) => {
+                    if(url) {
+                        onSubmit({
+                          logoLink: '',
+                          email: '',
+                          companyName: '',
+                          companyEmail: ''
+                        })
+                    }
+                }}
+            />
+          </form>
+      </Form> */}
+    </Card>
+  )
+}

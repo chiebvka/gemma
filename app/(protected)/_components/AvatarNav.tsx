@@ -20,10 +20,17 @@ import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
+type User = {
+  email: string;
+  // Add other properties if needed
+};
 
-type Props = {}
+type Props = {
+
+}
 
 export default async function AvatarNav({}: Props) {
+
   
   const supabase = createClient();
   
@@ -38,6 +45,7 @@ export default async function AvatarNav({}: Props) {
   
       const supabase = createClient();
       await supabase.auth.signOut();
+
       return redirect("/");
     };
   
@@ -47,7 +55,7 @@ export default async function AvatarNav({}: Props) {
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
             <AvatarImage src="/avatars/01.png" alt="@shadcn" />
-            <AvatarFallback>{email.charAt(0).toUpperCase()}</AvatarFallback>
+            <AvatarFallback>{email?.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

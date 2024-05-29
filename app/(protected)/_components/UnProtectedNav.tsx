@@ -15,7 +15,6 @@ export default async function UnProtectedNav({}: Props) {
       } = await supabase.auth.getUser();
 
 
-
   return (
     <div className='w-full'>
         <div className="w-full">
@@ -34,12 +33,12 @@ export default async function UnProtectedNav({}: Props) {
                     </Link>
 
 
-                    {!user ? 
+                    {!user ? (
                     <Button>
                         <Link href="/login">
                             Get Started
                         </Link>
-                    </Button> : <AvatarNav />}
+                    </Button>) :( <AvatarNav />)}
 
                     
                 </div>

@@ -27,5 +27,7 @@ export const profileConfig = {
     pleaseWait: "Please wait...",
     successMessage: "Your profile has been updated.",
     errorMessage: "Error has been occured by updating your profile.",
+    successNameMessage: "Your Business Name has been updated.",
+    errorNameMessage: "Error has been occured by updating your Business Name.",
   };
   

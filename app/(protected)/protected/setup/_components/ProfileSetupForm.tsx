@@ -61,8 +61,8 @@ export default function ProfileSetupForm({userDetails}: Props) {
     // This can come from your database or API.
     const defaultValues: Partial<ProfileFormValues> = {
         email: userDetails?.email || "",
-        companyName: userDetails?.companyName || "",
-        logoLink: userDetails?.logoLink || "",
+        // companyName: userDetails?.companyName || "",
+        // logoLink: userDetails?.logoLink || "",
         companyEmail: userDetails?.companyEmail || "",
         companyAddress: userDetails?.companyAddress || "",
         companyMobile: userDetails?.companyMobile || "",
@@ -79,11 +79,11 @@ export default function ProfileSetupForm({userDetails}: Props) {
         setIsUpdating(true)
         const response = await updateSetup({
             id: userDetails.id,
-            companyName: data.companyName ?? '',
+            // companyName: data.companyName ?? '',
             companyEmail: data.companyEmail ?? '',
             companyMobile: data.companyMobile ?? '',
             companyAddress: data.companyAddress ?? '',
-            logoLink: data.logoLink ?? '',
+            // logoLink: data.logoLink ?? '',
         })    
         if (response) {
             toast({
@@ -106,43 +106,21 @@ export default function ProfileSetupForm({userDetails}: Props) {
 
   return (
 
-    <div className='space-y-3 border-2 border-black rounded-lg'>
+    <Card className='mt-6 border bg-slate-100 border-black shadow-lg rounded-md'>
 
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
 
-                <Card x-chunk="dashboard-04-chunk-1" >
                     <CardHeader>
-                        <CardTitle>{profileConfig.primaryTitle}</CardTitle>
-                        <CardDescription>{profileConfig.primarySubTitle}</CardDescription>
+                        Business Contact
+                        <CardDescription>Your business details which appear on your invoices, receipts annd contracts</CardDescription>
                     </CardHeader>
-                    <CardContent className='space-y-3 w-full'>
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <div className="flex flex-col space-y-3">  
-                                <label className='text-sm'>Email Address</label>
-                                <Input disabled value={userDetails?.email || ''} className="max-w-md" placeholder={userDetails?.email || ''} />  
-             
-                                <FormField
-                                    control={form.control}
-                                    name="companyName"
-                                    render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{profileConfig.businessName}</FormLabel>
-                                        <FormControl>
-                                        <Input
-                                            placeholder={profileConfig.businessNamePlaceholder}
-                                            {...field}
-                                            className="max-w-md"
-                                        />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                    )}
-                                />
-                
+                    <CardContent className='space-y-2 w-full'>
+                            <div className="flex flex-col  space-y-3">  
                                 <FormField
                                     control={form.control}
                                     name="companyEmail"
+                                    
                                     render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>{profileConfig.businessEmail}</FormLabel>
@@ -150,108 +128,7 @@ export default function ProfileSetupForm({userDetails}: Props) {
                                         <Input
                                             placeholder={profileConfig.businessEmailPlaceholder}
                                             {...field}
-                                            className="max-w-md"
-                                        />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                    )}
-                                />
-                            </div>
-                            <div className="flex flex-col space-y-3">  
-                                <div className="font-medium flex items-center justify-between">
-                                    Business Logo
-                                    <Button onClick={toggleEdit} variant="ghost">
-                                        {isEditing && (
-                                            <>Cancel</>
-                                        )} 
-                                        {!isEditing && !userDetails?.logoLink && (
-                                            <>
-                                                <PlusCircle className='h-4 w-4 mr-2' />
-                                                Add an Image
-                                            </>
-                                        )}
-
-                                        {!isEditing && userDetails?.logoLink && (
-                                            <>
-                                                <Pencil className='h-4 w-4 mr-2' />
-                                                Edit Image
-                                            </>
-                                        )}
-                                    </Button>
-                                </div>
-                                {!isEditing && (
-                                    !userDetails.logoLink ? (
-                                        <div className='flex items-center justify-center h-60 bg-slate-200 rounded-md'>
-                                            <ImageIcon className='h-10 w-10 text-slate-500' />
-                                        </div>
-                                    ) : (
-                                        <div className='relative aspect-video border-2 border-dashed border-black rounded-lg mt-2'>
-                                        <Image
-                                                alt="upload"
-                                                fill
-                                                className='object-contain rounded-md'
-                                                src={userDetails?.logoLink}
-                                            />
-                                        </div>
-                                    )
-                                )}
-                                {isEditing && (
-                                <FormField
-                                        control={form.control}
-                                        name="logoLink"
-                                        render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>{profileConfig.businessName}</FormLabel>
-                                            <FormControl>
-                                                <div>
-                                                    <FileUpload 
-                                                        endpoint='imageUploader'
-                                                        onChange={(url) => {
-                                                            if(url) {
-                                                                form.setValue('logoLink', url);
-                                                            }
-                                                        }}
-                                                    /> 
-                                                    <div className="text-xs text-muted-foreground mt-4">
-                                                        16:9 aspect ratio recommended
-                                                    </div>
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                        )}
-                                    />
-                                )}
- 
-                            <FormField
-                                    control={form.control}
-                                    name="companyName"
-                                    render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{profileConfig.businessName}</FormLabel>
-                                        <FormControl>
-                                        <Input
-                                            placeholder={profileConfig.businessNamePlaceholder}
-                                            {...field}
-                                            className="max-w-md"
-                                        />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="companyEmail"
-                                    render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>{profileConfig.businessEmail}</FormLabel>
-                                        <FormControl>
-                                        <Input
-                                            placeholder={profileConfig.businessEmailPlaceholder}
-                                            {...field}
-                                            className="max-w-md"
+                                            className="max-w-md "
                                         />
                                         </FormControl>
                                         <FormMessage />
@@ -294,12 +171,13 @@ export default function ProfileSetupForm({userDetails}: Props) {
                                     )}
                                 />                           
                             </div>
-                        </div>
+    
                         {isUpdating && (
-                            <div>
+                            <div className=''>
                                 <FileUpload
                                     endpoint='imageUploader'
                                     onChange={() => {}}
+                                    
                                 />
                                 <div className="text-xs text-muted-foreground mt-4">
                                     16:9 aspect ratio recommended
@@ -310,14 +188,15 @@ export default function ProfileSetupForm({userDetails}: Props) {
        
  
                     </CardContent>
-                    <CardFooter className="border-t-2 border-t-black flex justify-between px-6 py-4">
+                    <CardFooter className=" flex justify-between px-6 py-4">
+                    {/* <CardFooter className="border-t border-t-black flex justify-between px-6 py-4"> */}
                     {/* <Button>  </Button>       */}
                     <Button type="submit" disabled={isUpdating}>
                         {profileConfig.update}
                     </Button>
                     </CardFooter>
 
-                </Card>
+
             </form>
         </Form>
 
@@ -333,6 +212,6 @@ export default function ProfileSetupForm({userDetails}: Props) {
           </AlertDialogHeader>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </Card>
   )
 }

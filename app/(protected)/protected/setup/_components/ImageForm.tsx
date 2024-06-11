@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image';
-import * as z from "zod";
+import { z } from 'zod';
 import { ImageIcon, Pencil, PlusCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import FileUpload from '@/components/FileUpload';
@@ -103,12 +103,20 @@ async function onSubmit(data:BusinessLogoFormValues){
        <CardHeader className="font-medium flex flex-row items-center justify-between">
             Busiess Logo
             <Button onClick={toggleEdit} variant="ghost">
-                {isEditing ? (
+            {isEditing && (
                     <>Cancel</>
-                ): (
+                )} 
+                {!isEditing && !userDetails?.logoLink && (
+                    <span className='text-xs flex'>
+                        <PlusCircle className='h-4 w-4 mr-1' />
+                        Add an Image
+                    </span>
+                )}
+
+                {!isEditing && userDetails?.logoLink && (
                     <>
                         <Pencil className='h-4 w-4 mr-2' />
-                        Edit Logo
+                        Edit Image
                     </>
                 )}
             </Button>
@@ -166,23 +174,6 @@ async function onSubmit(data:BusinessLogoFormValues){
             </Form>
         )}
         </CardContent>
-      {/* <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-              <FileUpload 
-                endpoint='imageUploader'
-                onChange={(url) => {
-                    if(url) {
-                        onSubmit({
-                          logoLink: '',
-                          email: '',
-                          companyName: '',
-                          companyEmail: ''
-                        })
-                    }
-                }}
-            />
-          </form>
-      </Form> */}
     </Card>
   )
 }

@@ -31,7 +31,6 @@ export default function FileUpload({ onChange, endpoint }: FileUploadprops) {
               title: "Success 🎉",
               description: 'Invoice Logo updated successfully',
             })
-            // redirect("/protected/setup") 
         }}
         onUploadError={(error: Error) => {
             toast({

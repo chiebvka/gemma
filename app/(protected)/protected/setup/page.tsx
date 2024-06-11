@@ -34,7 +34,7 @@ import BusinessNameForm from './_components/BusinessNameForm';
 
 type Props = {}
 
-export default   async function page({}: Props) {
+export default async function page({}: Props) {
   const supabase = createClient();
 
   const {data: { user } } = await supabase.auth.getUser();
@@ -46,7 +46,7 @@ export default   async function page({}: Props) {
   .single();
 
 
-  console.log(userDetails)
+  // console.log(userDetails)
 
 if (error) {
   console.log(error);

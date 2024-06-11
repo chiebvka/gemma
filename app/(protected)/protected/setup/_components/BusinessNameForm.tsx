@@ -29,7 +29,7 @@ import {
 import { updateBusinessName, updateSetup } from '@/actions/setup/updateProfile';
 import { useToast } from '@/components/ui/use-toast';
 import { profileConfig } from '@/config/profile';
-import { Pencil } from 'lucide-react';
+import { Pencil, PlusCircle } from 'lucide-react';
 
 interface Props  {
     userDetails: Profile
@@ -96,12 +96,20 @@ export default function BusinessNameForm({userDetails}: Props) {
         <CardHeader className="font-medium flex flex-row items-center justify-between">
             Busiess Name
             <Button onClick={toggleEdit} variant="ghost">
-                {isEditing ? (
+            {isEditing && (
                     <>Cancel</>
-                ): (
+                )} 
+                {!isEditing && !userDetails?.companyName && (
+                    <span className='text-xs flex'>
+                        <PlusCircle className='h-4 w-4 mr-1' />
+                        Add Business Name
+                    </span>
+                )}
+
+                {!isEditing && userDetails?.companyName && (
                     <>
                         <Pencil className='h-4 w-4 mr-2' />
-                        Edit Title
+                        Edit Image
                     </>
                 )}
             </Button>

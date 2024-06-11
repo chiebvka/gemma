@@ -3,26 +3,51 @@ import EmptyStates from '../../_components/EmptyStates'
 import PageHeadings from '@/components/PageHeadings'
 import FinanceForm from './_components/FinanceForm'
 import CreateHeadings from '../../_components/CreateHeadings'
+import { createClient } from '@/utils/supabase/server'
+import { stripe } from '@/lib/stripe'
+import EmptyProcessor from './_components/EmptyProcessor'
+import ProcessorForm from '../setup/processor/_components/ProcessorForm'
 
 
 
 
 type Props = {}
 
+
+
 let empty = true
 
-export default function page({}: Props) {
+export default async function page({}: Props) {
+  const supabase = createClient()
+  const { data: { user }} = await supabase.auth.getUser()
+
+  const { data: userDetails, error } = await supabase
+  .from('profiles')
+  .select('*')
+  .match({id: user?.id})
+  .single();
+
+
+  console.log(userDetails)
+
+if (error) {
+  console.log(error);
+}
+
+
+
   return (
-    <div  className="flex-1 w-full p-4 max-w-5xl mx-auto  flex flex-col space-x-2 items-center">
-      {/* {empty == true ?
-        <EmptyStates title="Unlinked" description="Seems like you haven't connected your payment method yet" buttonLink="/protected/invoices/create" imageSrc="/dashempty.png"  buttonTitle="Get Started" /> :
-        <div></div>
-      } */}
-      
-      <CreateHeadings title='Link Payment' description='Choose your payment method and connect your api keys to add them to your invoice'  />
       <div className=" w-full">
-        <FinanceForm />
+      {empty == true ?
+        <EmptyStates title="Link Payment" description="Seems like you haven't connected your payment method yet" buttonLink="/protected/finances/connect" imageSrc="/dashempty.png"  buttonTitle="Connect Processor" /> :
+        <div></div>
+      }
+      {/* <CreateHeadings title='Link Payment' description='Choose your payment method and connect your api keys to add them to your invoice'  /> */}
+        <EmptyProcessor title='Processor Connected' description="Looks like you're all setup on the processor side of things" />
+        <div className='w-full md:w-10/12 mx-auto'>
+          <ProcessorForm />
+        </div>
+        {/* <FinanceForm userDetails={userDetails} /> */}
       </div>
-    </div>
   )
 }

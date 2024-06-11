@@ -187,6 +187,7 @@ export type Database = {
           paymentLink: string | null
           paymentStatus: boolean | null
           subscriber: boolean | null
+          stripeConnectLinked: boolean | null
         }
         Insert: {
           companyAddress?: string | null
@@ -202,6 +203,7 @@ export type Database = {
           paymentLink?: string | null
           paymentStatus?: boolean | null
           subscriber?: boolean | null
+          stripeConnectLinked?: boolean | null
         }
         Update: {
           companyAddress?: string | null
@@ -217,6 +219,7 @@ export type Database = {
           paymentLink?: string | null
           paymentStatus?: boolean | null
           subscriber?: boolean | null
+          stripeConnectLinked?: boolean | null
         }
         Relationships: []
       }

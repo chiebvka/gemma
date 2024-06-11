@@ -27,7 +27,7 @@ import {
     AlertDialogTitle,
   } from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/ui/use-toast";
-import { z } from "zod";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from '@/components/ui/input';
@@ -39,6 +39,7 @@ import { ProfileFormSchema } from '@/lib/validation/profile';
 import { updateSetup } from '@/actions/setup/updateProfile';
 import { profileConfig } from '@/config/profile';
 import FileUpload from '@/components/FileUpload';
+import { z } from 'zod';
 
 
 type Profile = Tables<'profiles'>;

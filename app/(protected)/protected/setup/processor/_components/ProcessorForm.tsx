@@ -19,35 +19,6 @@ type Props = {}
 export default function ProcessorForm({}: Props) {
   return (
     <div className='space-y-3  rounded-lg'>
-        {/* <Card className="w-full bg-gradient-to-r space-y-3 from-[#6366F1] to-[#8B5CF6] text-white shadow-lg">
-            <CardHeader>
-                <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <Icons.stripe
-                    className="h-8 w-8 filter drop-shadow"
-                    />
-                    <h3 className="text-lg font-medium">Stripe</h3>
-                </div>
-                <Badge className="bg-white text-[#6366F1] font-medium" >
-                    Connected
-                </Badge>
-                </div>
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-4">
-                <p className="text-sm">Your Stripe account is currently connected and ready to accept payments.</p>
-                <div className="flex items-center justify-between">
-                    <Button className="bg-white text-[#6366F1] hover:bg-gray-100" size="sm" variant="outline">
-                    Change Processor
-                    </Button>
-                    <div className="flex items-center gap-2">
-                    <ClockIcon className="h-4 w-4" />
-                    <span className="text-sm">Connected since May 21, 2024</span>
-                    </div>
-                </div>
-                </div>
-            </CardContent>
-        </Card> */}
         <Card className="w-full bg-gradient-to-r space-y-4 from-[#6366F1] to-[#8B5CF6] text-white shadow-lg">
             <CardHeader>
                 <div className="flex items-center justify-between">
@@ -67,7 +38,7 @@ export default function ProcessorForm({}: Props) {
                 <p className="text-xs md:text-sm">Your Stripe account is currently connected and ready to accept payments.</p>
                 <div className="flex items-center justify-between">
                     <Button className="bg-white text-[#6366F1] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
-                      <Link href="/protected/finances">
+                      <Link href="/protected/finances/connect">
                         Change Processor
                       </Link>
                     </Button>

@@ -4,6 +4,8 @@ import { profileLogoSchema, profileNameSchema, profileSchema } from "@/lib/valid
 import { createClient } from "@/utils/supabase/server";
 import { z } from "zod";
 
+
+
 export async function updateSetup(context: z.infer<typeof profileSchema>){
     const supabase = createClient();
     try {

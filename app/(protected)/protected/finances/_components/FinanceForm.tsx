@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+
 import { Input } from '@/components/ui/input';
 import {
     Form,
@@ -35,29 +35,64 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogHeader,
+    AlertDialogTitle,
+  } from "@/components/ui/alert-dialog";
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { FinanceFormSchema } from '@/lib/validation/finance';
 import { Icons } from '@/components/icons';
+import { Loader2 as SpinnerIcon } from "lucide-react";
 import Link from 'next/link';
 import { ClockIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Tables } from '@/types/supabase';
+import { z } from 'zod';
+import { onboardStripe, removeStripe, stripeSetup } from '@/actions/finances/setup';
+import { profileConfig } from '@/config/profile';
+import { useToast } from '@/components/ui/use-toast';
+import { connected } from 'process';
+import { useRouter } from 'next/navigation';
 
-type Props = {}
+
+interface Props  {
+    userDetails: Profile,
+    // stripeAccount: string,
+  }
+  
+  type Profile = Tables<'profiles'>;
 type FinanceFormValues = z.infer<typeof FinanceFormSchema>
 
-export default function FinanceForm({}: Props) {
+export default function FinanceForm({userDetails}: Props) {
 
-
+    const router = useRouter();
+    const { toast } = useToast();
+    const [isUpdating, setIsUpdating] = useState<boolean>(false);
     const [selectedProcessor, setSelectedProcessor] = useState('')
     const [onboardingUrl, setOnboardingUrl] = useState('')
 
-    const handleProcessorChange = (e: React.FormEvent<HTMLButtonElement>) => {
-        setSelectedProcessor(e.currentTarget.value)
-    }
+    // const handleProcessorChange = (e: React.FormEvent<HTMLButtonElement>) => {
+    //     setSelectedProcessor(e.currentTarget.value)
+    // }
     
     const defaultValues:Partial<FinanceFormValues> = {
-        isActive: false
+        id: userDetails?.id || "",
+        connectedAccountId: userDetails?.connectedAccountId || ""
     }
     const form = useForm<FinanceFormValues>({
         resolver: zodResolver(FinanceFormSchema),
@@ -65,14 +100,49 @@ export default function FinanceForm({}: Props) {
 
     })
 
+    async function createStripe(data:FinanceFormValues) {
+        const response = await stripeSetup({
+            id: userDetails?.id,
+            connectedAccountId: data?.connectedAccountId
+        })
 
-    const handleonboardingurl = async (event: React.MouseEvent<HTMLButtonElement>) => {
-        if(selectedProcessor === "paypal"){
-            setOnboardingUrl('https://www.paypal.com')
-        } else if (selectedProcessor === 'stripe') {
-            setOnboardingUrl('https://www.stripe.com')
+        if (!response) {
+
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: (profileConfig.errorMessage),
+              })
         }
+
+
+
     }
+
+    async function deleteStripe() {
+        setIsUpdating(true)
+
+        const deleted =  await removeStripe()
+
+        if (deleted) {
+            toast({
+                variant: "success",
+                title: "Success",
+                description: (profileConfig.successMessage),
+              })  
+        } else {
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: (profileConfig.errorMessage),
+              })
+          }
+      
+          setIsUpdating(false);   
+          router.refresh() 
+    }
+
+
 
 
   return (
@@ -113,18 +183,70 @@ export default function FinanceForm({}: Props) {
                                     />
                                     <h3 className="text-sm md:text-lg font-medium">Stripe</h3>
                                 </div>
-                                <Badge className="bg-white text-[#6366F1] font-medium" >
-                                    Connected
-                                </Badge>
+                                {!userDetails?.connectedAccountId ?
+                                    <Badge className="bg-white text-[#6366F1] font-medium" >
+                                        Not Connected
+                                    </Badge>
+                                    :
+                                    <Badge className="bg-white text-[#6366F1] font-medium" >
+                                        Connected
+                                    </Badge>
+                                }
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
-                                <p className="text-xs md:text-sm">Your Stripe account is currently connected and ready to accept payments.</p>
+                                    {!userDetails?.connectedAccountId ? 
+                                        <p className="text-xs md:text-sm">You haven't connected your Stripe account yet. Connect your account to start accepting payments.</p>
+                                        :
+                                        <p className="text-xs md:text-sm">Your Stripe account is currently connected and ready to accept payments.</p>
+                                    }
                                 <div className="flex items-center justify-between">
-                                    <Button className="bg-white text-[#6366F1] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
-                                    Change Processor
-                                    </Button>
+                                    <Sheet> 
+                                        {!userDetails?.connectedAccountId ? 
+                                            <SheetTrigger asChild>
+                                                    <form onSubmit={form.handleSubmit(createStripe)}>
+                                                        <Button type='submit'  className="bg-white text-[#6366F1] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
+                                                                Connect Stripe
+                                                        </Button>
+                                                    </form>  
+                                             </SheetTrigger>
+                                              :
+                                            <form onSubmit={form.handleSubmit(deleteStripe)}>
+                                                <Button className="bg-white text-[#6366F1] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
+                                                    Disconnect Stripe
+                                                </Button>
+                                            </form>
+                                        }
+                                        <SheetContent side={"left"}>
+                                            <SheetHeader>
+                                                <SheetTitle>Stripe Onboarding</SheetTitle>
+                                                <SheetDescription>
+                                                    You would be connecting your stripe account to the email address below 
+                                                </SheetDescription>
+                                            </SheetHeader>
+                                            <div className="grid gap-4 py-4">
+                                                <div className="grid grid-cols-4 items-center gap-4">
+                                                    <Label htmlFor="name" className="text-right">
+                                                    Email
+                                                    </Label>
+                                                    <Input id="name" value={userDetails?.email|| ""} className="col-span-3"    disabled />
+                                                </div>
+                                            </div>
+                                            <SheetFooter>
+                                            <SheetClose asChild>
+                                                {userDetails?.stripeConnectLinked === false ?
+                                                <form action={onboardStripe}>
+                                                    <Button >Link to stripe</Button>
+                                                </form> 
+                                                :
+                                                <Button >Unlink</Button>
+                                                }
+                                            </SheetClose>
+                                            </SheetFooter>
+                                        </SheetContent>
+                                    </Sheet>
+                               
                                     <div className="flex space-x-2 items-center gap-2">
                                     <ClockIcon className="h-4 w-4 hidden md:flex" />
                                     <span className="text-xs md:text-sm"> Since May 21, 2024</span>
@@ -144,20 +266,39 @@ export default function FinanceForm({}: Props) {
                                     />
                                     <h3 className="text-sm md:text-lg font-medium">PayPal</h3>
                                 </div>
-                                <Badge className="bg-white text-[#0070BA] font-medium">
-                                    Not Connected
-                                </Badge>
+                                {!userDetails?.connectedAccountId ?
+                                    <Badge className="bg-white text-[#0070BA] font-medium">
+                                        Not Connected
+                                    </Badge>
+                                    :
+                                    <Badge className="bg-white text-[#0070BA] font-medium">
+                                        Connected
+                                    </Badge>
+                                }
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
-                                <p className="text-xs md:text-sm">
-                                    You haven't connected your PayPal account yet. Connect your account to start accepting payments.
-                                </p>
+                                {!userDetails?.connectedAccountId ? 
+                                <p className="text-xs md:text-sm"> You haven't connected your PayPal account yet. Connect your account to start accepting payments.</p> 
+                                :
+                                <p className="text-xs md:text-sm"> Your Stripe account is currently connected and ready to accept payments.</p> 
+
+                                }
                                 <div className="flex items-center justify-between">
+                                {!userDetails?.connectedAccountId ?
+                                    <form>
+                                        <Button className="bg-white text-[#0070BA] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
+                                            Connect PayPal
+                                        </Button>
+                                    </form>
+                                    : 
+                                    <form>
                                     <Button className="bg-white text-[#0070BA] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
-                                    Connect PayPal
+                                        Disconnect PayPal
                                     </Button>
+                                    </form>
+                                 }
                                     <div className="flex space-x-2 items-center gap-2">
                                     <ClockIcon className="h-4 w-4 hidden md:flex" />
                                     <span className="text-xs md:text-sm">Not connected</span>
@@ -177,20 +318,38 @@ export default function FinanceForm({}: Props) {
                                     />
                                     <h3 className="text-sm md:text-lg font-medium">Lemon Squeezy</h3>
                                 </div>
-                                <Badge className="bg-white text-[#F59E0B] font-medium" >
-                                    Not Connected
-                                </Badge>
+                                {!userDetails?.connectedAccountId ?
+                                    <Badge className="bg-white text-[#F59E0B] font-medium" >
+                                        Not Connected
+                                    </Badge>
+                                    : 
+                                    <Badge className="bg-white text-[#F59E0B] font-medium" >
+                                        Connected
+                                    </Badge>
+                                }
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
-                                <p className="text-xs md:text-sm">
-                                    You haven't connected your Lemon Squeezy account yet. Connect your account to start accepting payments.
-                                </p>
+                                    {!userDetails?.connectedAccountId ? 
+                                        <p className="text-xs md:text-sm">You haven't connected your LemonSqueezy account yet. Connect your account to start accepting payments. </p>
+                                        :
+                                        <p className="text-xs md:text-sm">Your LemonSqueezy account is currently connected and ready to accept payments. </p>
+                                    }
                                 <div className="flex items-center justify-between">
-                                    <Button className="bg-white text-[#F59E0B] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
-                                    Connect LemonSqueezy
-                                    </Button>
+                                    {!userDetails?.connectedAccountId ? 
+                                    <form>           
+                                        <Button className="bg-white text-[#F59E0B] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
+                                        Connect LemonSqueezy
+                                        </Button>
+                                    </form>
+                                    : 
+                                    <form>           
+                                        <Button className="bg-white text-[#F59E0B] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
+                                        Disconnect LemonSqueezy
+                                        </Button>
+                                    </form>
+                                    }
                                     <div className="flex space-x-2 items-center gap-2">
                                     <ClockIcon className="h-4 w-4 hidden md:flex" />
                                     <span className="text-xs md:text-sm">Not connected</span>
@@ -210,22 +369,41 @@ export default function FinanceForm({}: Props) {
                                     />
                                     <h3 className="text-sm md:text-lg font-medium">Paystack</h3>
                                 </div>
+                                {!userDetails?.connectedAccountId ?
                                 <Badge className="bg-white text-[#00C1A5] font-medium" >
                                     Not Connected
+                                </Badge> : 
+                                <Badge className="bg-white text-[#00C1A5] font-medium" >
+                                     Connected
                                 </Badge>
+                                }
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
-                                <p className="text-xs md:text-sm">
-                                    You haven't connected your Paystack account yet. Connect your account to start accepting payments.
-                                </p>
+                                    {!userDetails?.connectedAccountId ? 
+                                        <p className="text-xs md:text-sm"> You haven't connected your Paystack account yet. Connect your account to start accepting payments. </p>
+                                        :
+                                        <p className="text-xs md:text-sm">Your Paystack account is currently connected and ready to accept payments. </p>
+                                    }
                                 <div className="flex items-center justify-between">
-                                    <Button className="bg-white text-[#00C1A5] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
-                                    Connect Paystack
-                                    </Button>
+                                    {!userDetails?.connectedAccountId ? 
+                                    <form>
+                                        <Button className="bg-white text-[#00C1A5] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
+                                            Connect Paystack
+                                        </Button>
+                                    </form>
+                                    : 
+                                    <form>
+                                        <Button className="bg-white text-[#00C1A5] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
+                                            Disconnect Paystack
+                                        </Button>
+                                    </form>
+                                    }
+                                 
                                     <div className="flex space-x-2 items-center gap-2">
                                     <ClockIcon className="h-4 w-4 hidden md:flex" />
+                                    
                                     <span className="text-xs md:text-sm">Not connected</span>
                                     </div>
                                 </div>
@@ -235,6 +413,18 @@ export default function FinanceForm({}: Props) {
                     </TabsContent>
                 </div>
             </Tabs>
+            <AlertDialog open={isUpdating} onOpenChange={setIsUpdating}>
+                <AlertDialogContent className="font-sans">
+                <AlertDialogHeader>
+                    <AlertDialogTitle className="text-center">
+                    {profileConfig.pleaseWait}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="mx-auto text-center">
+                    <SpinnerIcon className="h-6 w-6 animate-spin" />
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                </AlertDialogContent>
+            </AlertDialog>
     </div>
   )
 }

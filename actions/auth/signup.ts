@@ -13,6 +13,7 @@ export default async function signUp(formData: FormData)  {
 
     const supabase = createClient();
 
+ 
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -20,6 +21,29 @@ export default async function signUp(formData: FormData)  {
         emailRedirectTo: `${origin}/auth/callback`,
       },
     });
+
+  //   const accountDetails = await stripe.accounts.create({
+  //     email: email as string,
+  //     controller: {
+  //       losses: {
+  //         payments: "application",
+  //       },
+  //       fees: {
+  //         payer: "application",
+  //       },
+  //       stripe_dashboard: {
+  //         type: "express",
+  //       },
+  //     },
+  // })
+
+
+
+    // const { data: userProfile, error: profileError } = await supabase
+    // .from('profiles')
+    // .update({
+    //     connectedAccountId: accountDetails.id
+    // })
 
 
 

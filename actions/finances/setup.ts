@@ -1,39 +1,48 @@
 "use server"
 
-import { stripe } from "@/lib/stripe"
 import { connectedAccountSchema } from "@/lib/validation/connect";
+import { stripe } from "@/lib/stripe"
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-export  async function stripeSetup(context: z.infer<typeof connectedAccountSchema>) {
+export  async function stripeCreate() {
   const supabase = createClient();
   try {
-      const profile = connectedAccountSchema.parse(context);
+      // const profile = connectedAccountSchema.parse(context);
       const { data: { user }} = await supabase.auth.getUser();
+
+
+
+    const accountDetails = await stripe.accounts.create({
+      email: user?.email as string,
+      controller: {
+        losses: {
+          payments: "application",
+        },
+        fees: {
+          payer: "application",
+        },
+        stripe_dashboard: {
+          type: "express",
+        },
+      },
+  })
   
-      const account = await stripe.accounts.create({
-          email: user?.email,
-          controller: {
-            losses: {
-              payments: "application"
-            },
-            fees: {
-              payer: "application"
-            },
-            requirement_collection: "stripe",
-            stripe_dashboard: {
-              type: "express"
-            }
-          }
-      })
-  
+      // const account = await stripe.accounts.retrieve("acct_1PQsEr2cRxcY6H6P")
+      console.log(accountDetails?.id)
+      console.log(accountDetails?.object)
+      console.log(accountDetails?.company)
+      console.log(accountDetails?.details_submitted)
+      console.log(accountDetails?.email)
+      console.log(accountDetails?.external_accounts)
+      
       const { data, error } = await supabase
       .from('profiles')
       .update({
-          connectedAccountId: account.id
+          connectedAccountId: accountDetails.id
       })
-      .eq("id", profile.id)
+      .eq("id", user?.id)
       // .single();
 
 
@@ -56,17 +65,66 @@ export  async function stripeSetup(context: z.infer<typeof connectedAccountSchem
 
 }
 
+
+export async function  stripeSetup() {
+  const supabase = createClient();
+  try {
+    const { data: { user }} = await supabase.auth.getUser();
+    const { data, error } = await supabase
+    .from('profiles')
+    .update({
+      stripeConnectLinked: true
+    })
+    .eq("id", user?.id)
+
+
+    // const {data: userDetails, error: errorDetails} = await supabase
+    // .from('profiles')
+    // .select('connectedAccountId')
+    // .eq("id", user?.id)
+    // .single()
+
+    // console.log(userDetails?.connectedAccountId)
+
+
+    // const accountLink = await stripe.accountLinks.create({
+    //   account:  userDetails?.connectedAccountId as string,
+    //   refresh_url: "http://localhost:3000/protected",
+    //   return_url: "http://localhost:3000/protected",
+    //   type: "account_onboarding"
+    // })
+
+    // return redirect(accountLink?.url)
+
+
+
+    if (error) {
+      console.log(error);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.log(error);
+      return false;
+    }
+    return false;
+  }
+}
+
 export async function removeStripe() {
   const supabase = createClient()
   try {
     const { data: { user }} = await supabase.auth.getUser();
       
     const account = await stripe.accounts.retrieve()
-    console.log(account?.id)
+    // console.log(account?.id)
+    
     const {data, error} = await supabase
     .from('profiles')
-    .delete()
-    .eq("connectedAccountId", account?.id)
+    .update({stripeConnectLinked: false})
+    .eq("id", user?.id)
+    .select()
 
 
     if (error) {
@@ -87,31 +145,25 @@ export async function removeStripe() {
 
 export async function onboardStripe(){
   const supabase = createClient();
-  try {
-    const { data: { user }} = await supabase.auth.getUser();
-    const {data, error} = await supabase
-    .from('profiles')
-    .select("connectedAccountId")
-    .eq("id", user?.id)
 
-    if(data) {
-      const profile = data[0]
+    const { data: { user }} = await supabase.auth.getUser();
+    const {data: userDetails, error} = await supabase
+    .from('profiles')
+    .select('connectedAccountId')
+    .eq("id", user?.id)
+    .single()
+
+    console.log(userDetails?.connectedAccountId)
+
+
       const accountLink = await stripe.accountLinks.create({
-        account: profile?.connectedAccountId as string,
-        refresh_url: "http://localhost:3000/protected/finances",
+        account:  userDetails?.connectedAccountId,
+        refresh_url: "http://localhost:3000/protected",
         return_url: "http://localhost:3000/protected/finances",
         type: "account_onboarding"
       })
-      return redirect(accountLink?.url)
-    }
+
+      return redirect(accountLink.url)
 
 
-
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.log(error);
-      return false;
-    }
-    return false;
-  }
 }

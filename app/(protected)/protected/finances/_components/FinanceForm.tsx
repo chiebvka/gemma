@@ -68,6 +68,7 @@ import { profileConfig } from '@/config/profile';
 import { useToast } from '@/components/ui/use-toast';
 import { connected } from 'process';
 import { useRouter } from 'next/navigation';
+import { financeConfig } from '@/config/finance';
 
 
 interface Props  {
@@ -75,7 +76,7 @@ interface Props  {
     // stripeAccount: string,
   }
   
-  type Profile = Tables<'profiles'>;
+type Profile = Tables<'profiles'>;
 type FinanceFormValues = z.infer<typeof FinanceFormSchema>
 
 export default function FinanceForm({userDetails}: Props) {
@@ -100,23 +101,18 @@ export default function FinanceForm({userDetails}: Props) {
 
     })
 
-    async function createStripe(data:FinanceFormValues) {
-        const response = await stripeSetup({
-            id: userDetails?.id,
-            connectedAccountId: data?.connectedAccountId
-        })
+    async function connectStripe() {
+        const response = await stripeSetup()
 
         if (!response) {
 
             toast({
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",
-                description: (profileConfig.errorMessage),
+                description: (financeConfig.stripeConnectError),
               })
         }
-
-
-
+        router.refresh()
     }
 
     async function deleteStripe() {
@@ -142,6 +138,18 @@ export default function FinanceForm({userDetails}: Props) {
           router.refresh() 
     }
 
+    async function stripeOnboard() {
+        const accounts = await onboardStripe()
+        console.log(accounts)
+
+        // if(!accounts) {
+        //     toast({
+        //         variant: "destructive",
+        //         title: "Uh oh! Something went wrong.",
+        //         description: (profileConfig.errorMessage),
+        //       })
+        // }
+    }
 
 
 
@@ -183,7 +191,7 @@ export default function FinanceForm({userDetails}: Props) {
                                     />
                                     <h3 className="text-sm md:text-lg font-medium">Stripe</h3>
                                 </div>
-                                {!userDetails?.connectedAccountId ?
+                                {userDetails?.stripeConnectLinked === false?
                                     <Badge className="bg-white text-[#6366F1] font-medium" >
                                         Not Connected
                                     </Badge>
@@ -196,21 +204,21 @@ export default function FinanceForm({userDetails}: Props) {
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
-                                    {!userDetails?.connectedAccountId ? 
+                                    {userDetails?.stripeConnectLinked === false ? 
                                         <p className="text-xs md:text-sm">You haven't connected your Stripe account yet. Connect your account to start accepting payments.</p>
                                         :
                                         <p className="text-xs md:text-sm">Your Stripe account is currently connected and ready to accept payments.</p>
                                     }
                                 <div className="flex items-center justify-between">
                                     <Sheet> 
-                                        {!userDetails?.connectedAccountId ? 
-                                            <SheetTrigger asChild>
-                                                    <form onSubmit={form.handleSubmit(createStripe)}>
+                                        {userDetails?.stripeConnectLinked === false ? 
+                                        <SheetTrigger asChild>
+                                                    <form onSubmit={form.handleSubmit(connectStripe)}>
                                                         <Button type='submit'  className="bg-white text-[#6366F1] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
                                                                 Connect Stripe
                                                         </Button>
                                                     </form>  
-                                             </SheetTrigger>
+                                            </SheetTrigger>
                                               :
                                             <form onSubmit={form.handleSubmit(deleteStripe)}>
                                                 <Button className="bg-white text-[#6366F1] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
@@ -235,13 +243,11 @@ export default function FinanceForm({userDetails}: Props) {
                                             </div>
                                             <SheetFooter>
                                             <SheetClose asChild>
-                                                {userDetails?.stripeConnectLinked === false ?
-                                                <form action={onboardStripe}>
+
+                                                <form onSubmit={form.handleSubmit(stripeOnboard)}>
                                                     <Button >Link to stripe</Button>
                                                 </form> 
-                                                :
-                                                <Button >Unlink</Button>
-                                                }
+                                           
                                             </SheetClose>
                                             </SheetFooter>
                                         </SheetContent>

@@ -13,11 +13,9 @@ export async function updateSetup(context: z.infer<typeof profileSchema>){
         const { data, error } = await supabase
         .from("profiles")
         .update({
-          // companyName: profile.companyName,
           companyEmail: profile.companyEmail,
           companyMobile: profile.companyMobile,
           companyAddress: profile.companyAddress,
-          // logoLink: profile.logoLink,
         })
         .eq("id", profile.id);
   

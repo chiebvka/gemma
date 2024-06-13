@@ -68,7 +68,7 @@ export  async function stripeCreate() {
 
 export async function  stripeSetup() {
   const supabase = createClient();
-  try {
+  // try {
     const { data: { user }} = await supabase.auth.getUser();
     const { data, error } = await supabase
     .from('profiles')
@@ -78,38 +78,25 @@ export async function  stripeSetup() {
     .eq("id", user?.id)
 
 
-    // const {data: userDetails, error: errorDetails} = await supabase
-    // .from('profiles')
-    // .select('connectedAccountId')
-    // .eq("id", user?.id)
-    // .single()
+    const {data: userDetails, error: errorDetails} = await supabase
+    .from('profiles')
+    .select('connectedAccountId')
+    .eq("id", user?.id)
+    .single()
 
-    // console.log(userDetails?.connectedAccountId)
-
-
-    // const accountLink = await stripe.accountLinks.create({
-    //   account:  userDetails?.connectedAccountId as string,
-    //   refresh_url: "http://localhost:3000/protected",
-    //   return_url: "http://localhost:3000/protected",
-    //   type: "account_onboarding"
-    // })
-
-    // return redirect(accountLink?.url)
+    console.log(userDetails?.connectedAccountId)
 
 
+    const accountLink = await stripe.accountLinks.create({
+      account:  userDetails?.connectedAccountId as string,
+      refresh_url: "http://localhost:3000/protected/finances",
+      return_url: `http://localhost:3000/protected/finances/connect`,
+      type: "account_onboarding"
+    })
 
-    if (error) {
-      console.log(error);
-      return false;
-    }
-    return true;
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      console.log(error);
-      return false;
-    }
-    return false;
-  }
+    return redirect(accountLink?.url)
+
+
 }
 
 export async function removeStripe() {
@@ -159,7 +146,7 @@ export async function onboardStripe(){
       const accountLink = await stripe.accountLinks.create({
         account:  userDetails?.connectedAccountId,
         refresh_url: "http://localhost:3000/protected",
-        return_url: "http://localhost:3000/protected/finances",
+        return_url: "http://localhost:3000/protected/finances/connnect",
         type: "account_onboarding"
       })
 

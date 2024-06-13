@@ -103,16 +103,6 @@ export default function FinanceForm({userDetails}: Props) {
 
     async function connectStripe() {
         const response = await stripeSetup()
-
-        if (!response) {
-
-            toast({
-                variant: "destructive",
-                title: "Uh oh! Something went wrong.",
-                description: (financeConfig.stripeConnectError),
-              })
-        }
-        router.refresh()
     }
 
     async function deleteStripe() {
@@ -212,13 +202,15 @@ export default function FinanceForm({userDetails}: Props) {
                                 <div className="flex items-center justify-between">
                                     <Sheet> 
                                         {userDetails?.stripeConnectLinked === false ? 
+                                        <>
                                         <SheetTrigger asChild>
+                                            </SheetTrigger>
                                                     <form onSubmit={form.handleSubmit(connectStripe)}>
                                                         <Button type='submit'  className="bg-white text-[#6366F1] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
                                                                 Connect Stripe
                                                         </Button>
                                                     </form>  
-                                            </SheetTrigger>
+                                        </>
                                               :
                                             <form onSubmit={form.handleSubmit(deleteStripe)}>
                                                 <Button className="bg-white text-[#6366F1] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">

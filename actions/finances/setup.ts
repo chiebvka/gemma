@@ -154,3 +154,22 @@ export async function onboardStripe(){
 
 
 }
+
+
+export async function getStripeDashboard() {
+  const supabase = createClient();
+  const { data: { user }} = await supabase.auth.getUser();
+  const {data: userDetails, error} = await supabase
+  .from('profiles')
+  .select('connectedAccountId')
+  .eq("id", user?.id)
+  .single()
+
+
+  const loginLink = await stripe.accounts.createLoginLink(
+    userDetails?.connectedAccountId as string
+
+    )
+
+    return redirect(loginLink?.url)
+}

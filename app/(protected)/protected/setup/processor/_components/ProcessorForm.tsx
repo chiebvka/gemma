@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react'
 import {
     Card,
@@ -13,10 +15,14 @@ import { ClockIcon } from 'lucide-react';
 import { stripe } from '../../../../../../lib/stripe/index';
 import { Icons } from '@/components/icons';
 import Link from 'next/link';
+import { getStripeDashboard } from '@/actions/finances/setup';
 
 type Props = {}
 
 export default function ProcessorForm({}: Props) {
+  // async function stripeDashboard() {
+  //   const response = awai
+  // }
   return (
     <div className='space-y-3  rounded-lg'>
         <Card className="w-full bg-gradient-to-r space-y-4 from-[#6366F1] to-[#8B5CF6] text-white shadow-lg">
@@ -37,11 +43,14 @@ export default function ProcessorForm({}: Props) {
                 <div className="space-y-4">
                 <p className="text-xs md:text-sm">Your Stripe account is currently connected and ready to accept payments.</p>
                 <div className="flex items-center justify-between">
-                    <Button className="bg-white text-[#6366F1] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
-                      <Link href="/protected/finances/connect">
-                        Change Processor
-                      </Link>
+                  <form action={getStripeDashboard}>
+
+                    <Button type='submit' className="bg-white text-[#6366F1] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
+                        View Dashboard
+                      {/* <Link href="/protected/finances/connect">
+                      </Link> */}
                     </Button>
+                  </form>
                     <div className="flex space-x-2 items-center gap-2">
                     <ClockIcon className="h-4 w-4 hidden md:flex" />
                     <span className="text-xs md:text-sm"> Since May 21, 2024</span>

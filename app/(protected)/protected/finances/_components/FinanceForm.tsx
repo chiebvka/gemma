@@ -129,8 +129,11 @@ export default function FinanceForm({userDetails}: Props) {
     }
 
     async function stripeOnboard() {
+        setIsUpdating(true)
         const accounts = await onboardStripe()
+
         console.log(accounts)
+        setIsUpdating(false)
 
         // if(!accounts) {
         //     toast({

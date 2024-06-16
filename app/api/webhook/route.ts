@@ -98,3 +98,15 @@ const relevantEvents = new Set([
     return new Response(JSON.stringify({ received: true }));
   }
 
+  // const supabase = createClient();
+  // const { data: { user }} = await supabase.auth.getUser();
+  // const {data: userDetails, error} = await supabase
+  // .from('profiles')
+  // .update({    
+  //   paymentStatus:
+  //   account.capabilities?.transfers === "pending" ||
+  //   account.capabilities?.transfers === "inactive"
+  //     ? false
+  //     : true})
+  // .eq("id", user?.id)
+  // .single()

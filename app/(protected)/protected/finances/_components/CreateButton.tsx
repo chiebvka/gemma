@@ -80,7 +80,7 @@ export default function CreateButton({userDetails}: Props) {
             :
                 <Button>
 
-                    <Link href={`/protected/finances/connect`}>Let's see</Link>
+                    <Link href={`/protected/finances/connect`}>Manage Processor</Link>
                 </Button>
             }
         </div>

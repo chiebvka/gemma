@@ -18,13 +18,14 @@ export  async function stripeCreate() {
       email: user?.email as string,
       controller: {
         losses: {
-          payments: "application",
+          payments: "stripe",
         },
         fees: {
-          payer: "application",
+          payer: "account",
         },
+        requirement_collection: "stripe",
         stripe_dashboard: {
-          type: "express",
+          type: "full",
         },
       },
   })

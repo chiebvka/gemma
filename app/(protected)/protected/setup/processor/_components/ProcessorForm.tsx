@@ -16,10 +16,14 @@ import { stripe } from '../../../../../../lib/stripe/index';
 import { Icons } from '@/components/icons';
 import Link from 'next/link';
 import { getStripeDashboard } from '@/actions/finances/setup';
+import { Tables } from '@/types/supabase';
 
-type Props = {}
-
-export default function ProcessorForm({}: Props) {
+type Profile = Tables<'profiles'>;
+interface Props  {
+  userDetails: Profile,
+  // stripeAccount: string,
+}
+export default function ProcessorForm({userDetails}: Props) {
   // async function stripeDashboard() {
   //   const response = awai
   // }
@@ -43,14 +47,14 @@ export default function ProcessorForm({}: Props) {
                 <div className="space-y-4">
                 <p className="text-xs md:text-sm">Your Stripe account is currently connected and ready to accept payments.</p>
                 <div className="flex items-center justify-between">
-                  <form action={getStripeDashboard}>
+                  {/* <form action={getStripeDashboard}>
 
-                    <Button type='submit' className="bg-white text-[#6366F1] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
+                  </form> */}
+                    <Button type='submit' className="bg-white text-[#6366F1] text-xs md:text-sm hover:bg-gray-100" asChild size="sm" variant="outline">
+                      <Link href={`https://dashboard.stripe.com/b/${userDetails?.connectedAccountId}`} target='_blank'>
                         View Dashboard
-                      {/* <Link href="/protected/finances/connect">
-                      </Link> */}
+                      </Link>
                     </Button>
-                  </form>
                     <div className="flex space-x-2 items-center gap-2">
                     <ClockIcon className="h-4 w-4 hidden md:flex" />
                     <span className="text-xs md:text-sm"> Since May 21, 2024</span>

@@ -11,10 +11,7 @@ export default async function ProtectedLayout({
     children: React.ReactNode;
   }) {
     const supabase = createClient();
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const {data: { user },} = await supabase.auth.getUser();
   
     if (!user) {
       return redirect("/login");
@@ -24,7 +21,6 @@ export default async function ProtectedLayout({
     <div className='w-full bg-muted/40'>
       <DesktopHeader />
         {children}
-        
     </div>
   )
 }

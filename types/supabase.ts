@@ -9,6 +9,33 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      clients: {
+        Row: {
+          address: string | null
+          created_at: string
+          email: string | null
+          id: string
+          mobile: string | null
+          name: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          mobile?: string | null
+          name?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          mobile?: string | null
+          name?: string | null
+        }
+        Relationships: []
+      }
       customers: {
         Row: {
           id: string
@@ -31,6 +58,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      deliverables: {
+        Row: {
+          amount_due: number | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          id: string
+          isComplete: boolean | null
+          project_id: string | null
+          start_date: string | null
+          tasks: string | null
+          title: string | null
+        }
+        Insert: {
+          amount_due?: number | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          isComplete?: boolean | null
+          project_id?: string | null
+          start_date?: string | null
+          tasks?: string | null
+          title?: string | null
+        }
+        Update: {
+          amount_due?: number | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          isComplete?: boolean | null
+          project_id?: string | null
+          start_date?: string | null
+          tasks?: string | null
+          title?: string | null
+        }
+        Relationships: []
       }
       invoices: {
         Row: {
@@ -180,13 +246,13 @@ export type Database = {
           companyName: string | null
           connectedAccountId: string | null
           created_at: string
-          stripe_customer_id: string | null
           email: string | null
           id: string
           logoLink: string | null
           paymentLink: string | null
           paymentStatus: boolean | null
-          subscriber: boolean | null
+          processor: string | null
+          stripe_customer_id: string | null
           stripeConnectLinked: boolean | null
         }
         Insert: {
@@ -196,13 +262,13 @@ export type Database = {
           companyName?: string | null
           connectedAccountId?: string | null
           created_at?: string
-          stripe_customer_id?: string | null
           email?: string | null
-          id?: string
+          id: string
           logoLink?: string | null
           paymentLink?: string | null
           paymentStatus?: boolean | null
-          subscriber?: boolean | null
+          processor?: string | null
+          stripe_customer_id?: string | null
           stripeConnectLinked?: boolean | null
         }
         Update: {
@@ -212,16 +278,123 @@ export type Database = {
           companyName?: string | null
           connectedAccountId?: string | null
           created_at?: string
-          stripe_customer_id?: string | null
           email?: string | null
           id?: string
           logoLink?: string | null
           paymentLink?: string | null
           paymentStatus?: boolean | null
-          subscriber?: boolean | null
+          processor?: string | null
+          stripe_customer_id?: string | null
           stripeConnectLinked?: boolean | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          amount: number | null
+          client_contract: string | null
+          client_id: string | null
+          created_at: string
+          currency: string | null
+          deliverable_id: string | null
+          deposit: number | null
+          description: string | null
+          draft: boolean | null
+          due_date: string | null
+          id: string
+          invoice_id: string | null
+          name: string | null
+          profile_id: string | null
+          receipt_id: string | null
+          signature: string | null
+          start_date: string | null
+          status: string | null
+        }
+        Insert: {
+          amount?: number | null
+          client_contract?: string | null
+          client_id?: string | null
+          created_at?: string
+          currency?: string | null
+          deliverable_id?: string | null
+          deposit?: number | null
+          description?: string | null
+          draft?: boolean | null
+          due_date?: string | null
+          id?: string
+          invoice_id?: string | null
+          name?: string | null
+          profile_id?: string | null
+          receipt_id?: string | null
+          signature?: string | null
+          start_date?: string | null
+          status?: string | null
+        }
+        Update: {
+          amount?: number | null
+          client_contract?: string | null
+          client_id?: string | null
+          created_at?: string
+          currency?: string | null
+          deliverable_id?: string | null
+          deposit?: number | null
+          description?: string | null
+          draft?: boolean | null
+          due_date?: string | null
+          id?: string
+          invoice_id?: string | null
+          name?: string | null
+          profile_id?: string | null
+          receipt_id?: string | null
+          signature?: string | null
+          start_date?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_deliverable_id_fkey"
+            columns: ["deliverable_id"]
+            isOneToOne: false
+            referencedRelation: "deliverables"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "projects_receipt_id_fkey"
+            columns: ["receipt_id"]
+            isOneToOne: false
+            referencedRelation: "receipt"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       receipt: {
         Row: {

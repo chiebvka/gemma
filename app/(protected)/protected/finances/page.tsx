@@ -50,7 +50,7 @@ if (error) {
         <CreateButton userDetails={userDetails} />
         <EmptyProcessor title='Processor Connected' description="Looks like you're all setup on the processor side of things" />
         <div className='w-full md:w-10/12 mx-auto'>
-          <ProcessorForm />
+          <ProcessorForm userDetails={userDetails} />
         </div>
         {/* <FinanceForm userDetails={userDetails} /> */}
       </div>

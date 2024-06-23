@@ -17,6 +17,7 @@ export type Database = {
           id: string
           mobile: string | null
           name: string | null
+          profile_id: string | null
         }
         Insert: {
           address?: string | null
@@ -25,6 +26,7 @@ export type Database = {
           id?: string
           mobile?: string | null
           name?: string | null
+          profile_id?: string | null
         }
         Update: {
           address?: string | null
@@ -33,8 +35,17 @@ export type Database = {
           id?: string
           mobile?: string | null
           name?: string | null
+          profile_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "clients_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       customers: {
         Row: {
@@ -67,6 +78,8 @@ export type Database = {
           due_date: string | null
           id: string
           isComplete: boolean | null
+          position: number | null
+          profile_id: string | null
           project_id: string | null
           start_date: string | null
           tasks: string | null
@@ -79,6 +92,8 @@ export type Database = {
           due_date?: string | null
           id?: string
           isComplete?: boolean | null
+          position?: number | null
+          profile_id?: string | null
           project_id?: string | null
           start_date?: string | null
           tasks?: string | null
@@ -91,12 +106,29 @@ export type Database = {
           due_date?: string | null
           id?: string
           isComplete?: boolean | null
+          position?: number | null
+          profile_id?: string | null
           project_id?: string | null
           start_date?: string | null
           tasks?: string | null
           title?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "deliverables_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deliverables_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       invoices: {
         Row: {
@@ -108,6 +140,7 @@ export type Database = {
           InvoiceNumber: string | null
           paymentLink: string | null
           products: string | null
+          profile_id: string | null
           recepient: Json | null
           status: boolean | null
           tax: number | null
@@ -117,10 +150,11 @@ export type Database = {
           cuurency?: string | null
           discount?: number | null
           duedate?: string | null
-          id?: string
+          id: string
           InvoiceNumber?: string | null
           paymentLink?: string | null
           products?: string | null
+          profile_id?: string | null
           recepient?: Json | null
           status?: boolean | null
           tax?: number | null
@@ -134,11 +168,20 @@ export type Database = {
           InvoiceNumber?: string | null
           paymentLink?: string | null
           products?: string | null
+          profile_id?: string | null
           recepient?: Json | null
           status?: boolean | null
           tax?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "invoices_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pdfDesigns: {
         Row: {
@@ -307,10 +350,10 @@ export type Database = {
           deliverable_id: string | null
           deposit: number | null
           description: string | null
-          draft: boolean | null
           due_date: string | null
           id: string
           invoice_id: string | null
+          isDraft: boolean | null
           name: string | null
           profile_id: string | null
           receipt_id: string | null
@@ -327,10 +370,10 @@ export type Database = {
           deliverable_id?: string | null
           deposit?: number | null
           description?: string | null
-          draft?: boolean | null
           due_date?: string | null
           id?: string
           invoice_id?: string | null
+          isDraft?: boolean | null
           name?: string | null
           profile_id?: string | null
           receipt_id?: string | null
@@ -347,10 +390,10 @@ export type Database = {
           deliverable_id?: string | null
           deposit?: number | null
           description?: string | null
-          draft?: boolean | null
           due_date?: string | null
           id?: string
           invoice_id?: string | null
+          isDraft?: boolean | null
           name?: string | null
           profile_id?: string | null
           receipt_id?: string | null

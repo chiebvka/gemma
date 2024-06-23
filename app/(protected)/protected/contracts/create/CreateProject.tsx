@@ -73,9 +73,7 @@ export default function CreateProject({}: Props) {
                 title: "Unexpected error",
                 description: "An unknown error occurred",
             });
-        }
-   
-        
+        }     
     }
 
   return (

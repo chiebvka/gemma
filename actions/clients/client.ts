@@ -40,8 +40,17 @@ export async function clientCreate(context:z.infer<typeof clientSchema>){
 export async function getclients(){
     const supabase = createClient();
     try {
-        
+        const { data: { user }} = await supabase.auth.getUser();
+        const { data, error } = await supabase
+        .from("clients")
+        .select("*")
+        .eq("profile_id", user?.id)
+        // console.log(data)
+        return data || []
+
+
     } catch (error) {
-        
+        console.log(error);
+        return null;
     }
 }

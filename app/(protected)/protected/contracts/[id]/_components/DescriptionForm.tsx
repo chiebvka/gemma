@@ -85,7 +85,7 @@ export default function DescriptionForm({initialData, id}: Props) {
   return (
     <Card className='mt-6 border bg-slate-100 border-black shadow-lg rounded-md'>
         <CardHeader className="font-medium flex flex-row items-center justify-between">
-            Project Name
+            Project Description
             <Button onClick={toggleEdit} variant="ghost">
             {isEditing && (
                     <>Cancel</>
@@ -93,14 +93,14 @@ export default function DescriptionForm({initialData, id}: Props) {
                 {!isEditing && !initialData?.description && (
                     <span className='text-xs flex'>
                         <PlusCircle className='h-4 w-4 mr-1' />
-                        Add Business Name
+                        Add Project Details
                     </span>
                 )}
 
                 {!isEditing && initialData?.description && (
                     <>
                         <Pencil className='h-4 w-4 mr-2' />
-                        Edit Project Name
+                        Edit Project Description
                     </>
                 )}
             </Button>
@@ -116,7 +116,7 @@ export default function DescriptionForm({initialData, id}: Props) {
                    
                 
             )}
-                    {isEditing && (
+            {isEditing && (
                 <Form {...form}>
                     <form 
                         onSubmit={form.handleSubmit(onSubmit)}
@@ -128,18 +128,18 @@ export default function DescriptionForm({initialData, id}: Props) {
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Course Title
+                                        Project Description
                                     </FormLabel>
                                     <FormControl>
                                         <Textarea 
                                             disabled={isSubmitting}
                                             rows={10}
-                                            placeholder="Your Business Name"
+                                            placeholder="Your project description"
                                             {...field}
                                         />
                                     </FormControl>
                                     <FormDescription>
-                                        Your business name for receipts and invoices
+                                        The details and short description of the project 
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>

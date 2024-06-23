@@ -58,6 +58,7 @@ async function onSubmit(data:ClientValues){
     email: data?.email,
     address: data?.address,
     mobile: data?.mobile
+    
   })
   setIsUpdating(false)
   if (response) {
@@ -66,7 +67,7 @@ async function onSubmit(data:ClientValues){
         title: "Success",
         description: clientConfig.createSuccessMessage,
     });
-    router.refresh()
+    location.reload() 
 } else {
     toast({
         variant: "destructive",

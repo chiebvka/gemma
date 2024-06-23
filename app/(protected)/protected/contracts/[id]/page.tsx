@@ -6,6 +6,8 @@ import { FolderPen } from 'lucide-react';
 import TitleForm from './_components/TitleForm';
 import DescriptionForm from './_components/DescriptionForm';
 import ClientCard from './_components/ClientCard';
+import { getclients } from '@/actions/clients/client';
+import DeliverablesForm from './_components/DeliverablesForm';
 
 type Props = {
   params: {
@@ -30,6 +32,10 @@ export default async function page({params}: Props) {
       return <NotFound />;
     }
 
+    let clients  = await getclients()
+    clients = clients || []
+    console.log(clients)
+
     const requiredFields = [
       project?.name,
       project?.description,
@@ -52,7 +58,7 @@ export default async function page({params}: Props) {
 
   return (
     <div className="flex-1 w-full p-4 max-w-5xl mx-auto border-2 border-green-600 flex flex-col space-x-2 items-center">
-        <div className="flex itesm-center justify-between">
+        <div className="flex flex-col w-full items-center border-2 border-black justify-between">
           <div className="flex flex-col gap-y-2">
               <h1 className="text-2xl font-medium">
                   Course Setup
@@ -77,7 +83,9 @@ export default async function page({params}: Props) {
                 initialData={project}
                 id={project.id}
               />
-                <ClientCard />
+              <ClientCard 
+                clients={clients}
+              />
               <DescriptionForm 
                 initialData={project}
                 id={project.id}
@@ -85,6 +93,18 @@ export default async function page({params}: Props) {
               <TitleForm 
                 initialData={project}
                 id={project.id}
+              />
+            </div>
+            <div className="space-y-6">
+              <div>
+                <div className="flex items-center gap-x-2">
+                  <IconBadge icon={FolderPen} />
+                  <h2 className="text-xl">Customize your course</h2>
+                </div>
+              </div>
+              <DeliverablesForm
+                initialData={project}
+                projectId={project.id}
               />
             </div>
           </div>

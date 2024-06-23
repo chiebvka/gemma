@@ -54,11 +54,15 @@ import { Check, ChevronsUpDown } from "lucide-react"
 import { cn } from '@/lib/utils';
 import ClientForm from './ClientForm';
 
+type Client = {
+  id: string;
+  name: string;
+  email: string;
+  address: string;
+};
+
 type Props = {
-    // initialData: {
-    //     name: string
-    // };
-    // id: string
+    clients:Client[]
 }
 const frameworks = [
     {
@@ -83,9 +87,14 @@ const frameworks = [
     },
   ]
 
-export default function ClientCard({}: Props) {
+
+
+export default function ClientCard({clients}: Props) {
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState("")
+
+
+
 
 
   return (
@@ -103,21 +112,21 @@ export default function ClientCard({}: Props) {
                     className="w-full justify-between"
                     >
                     {value
-                        ? frameworks.find((framework) => framework.value === value)?.label
+                        ? clients.find((client) => client.name === value)?.name
                         : "Select Client..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="flex flex-col p-0">
                     <Command>
-                        <CommandInput placeholder="Search framework..." />
+                        <CommandInput placeholder="Search Client List..." />
                         <CommandList>
-                            <CommandEmpty>No framework found.</CommandEmpty>
+                            <CommandEmpty>You don't have a client list yet</CommandEmpty>
                             <CommandGroup>
-                            {frameworks.map((framework) => (
+                            {clients.map((client) => (
                                 <CommandItem
-                                key={framework.value}
-                                value={framework.value}
+                                key={client?.id}
+                                value={client?.name}
                                 onSelect={(currentValue) => {
                                     setValue(currentValue === value ? "" : currentValue)
                                     setOpen(false)
@@ -126,10 +135,10 @@ export default function ClientCard({}: Props) {
                                 <Check
                                     className={cn(
                                     "mr-2 h-4 w-4",
-                                    value === framework.value ? "opacity-100" : "opacity-0"
+                                    value === client.id ? "opacity-100" : "opacity-0"
                                     )}
                                 />
-                                {framework.label}
+                                {client.name}
                                 </CommandItem>
                             ))}
                             </CommandGroup>

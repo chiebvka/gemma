@@ -1,6 +1,6 @@
 "use server"
 
-import { deliverableSchema, deliverableTitleSchema } from "@/lib/validation/deliverable";
+import { deliverableOrder, deliverableSchema, deliverableTitleSchema, reorderDeliverablesSchema } from "@/lib/validation/deliverable";
 import { createClient } from "@/utils/supabase/server";
 import { Description } from "@radix-ui/react-toast";
 import { z } from "zod";
@@ -70,4 +70,56 @@ export async function updatdeDeliverable(context:z.infer<typeof deliverableSchem
         return null;
     }
 
+}
+
+export async function fetchDeliverables(projectId: string){
+    const supabase = createClient();
+    try {
+        const { data: { user }} = await supabase.auth.getUser();
+        const { data, error} = await supabase
+        .from("deliverables")
+        .select("*")
+        .eq("project_id", projectId)
+        .eq("profile_id", user?.id)
+
+        console.log(data)
+        return data || []
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+
+export async function reorderDeliverable(context:z.infer<typeof deliverableOrder>){
+    const supabase = createClient();
+    try {
+        const deliverOrder = deliverableOrder.parse(context); 
+        const { data: { user }} = await supabase.auth.getUser();
+        const { data, error} = await supabase
+              .from("deliverables")
+              .update({ position: deliverOrder.position })
+              .eq("id", deliverOrder.id)
+              .eq("project_id", deliverOrder.project_id)
+              .eq("profile_id",user?.id)
+              .select()
+            
+              if(error){
+                console.log(error);
+                return null;
+              }
+              if (data.length > 0) {
+                const reorderedDeliverable = data[0];
+                console.log(reorderedDeliverable);
+                return reorderedDeliverable;
+            } else {
+                console.log("No data returned");
+                return null;
+            }
+      
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
 }

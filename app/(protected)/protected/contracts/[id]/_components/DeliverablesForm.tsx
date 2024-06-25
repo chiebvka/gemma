@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils';
 import { Tables } from '@/types/supabase';
 import { createDeliverable } from '@/actions/deliverables/deliver';
 import { profileConfig } from '@/config/profile';
+import DeliverableList from './DeliverableList';
 
 type Deliverables = Tables<'deliverables'>;
 type Project = Tables<'projects'>;
@@ -30,6 +31,7 @@ type Project = Tables<'projects'>;
 type Props = {
     initialData: Project & { deliverables: Deliverables[]};
     projectId: string;
+    
 }
 
 type DeliverableTitleValue = z.infer<typeof deliverableTitleSchema>
@@ -70,6 +72,15 @@ export default function DeliverablesForm({projectId, initialData}: Props) {
             description: (profileConfig.errorMessage),
             })
     }
+    }
+
+
+    const onReorder = async (updateData: { id: string; position: number}[]) => {
+
+    }
+
+    const onEdit = (id: string) => {
+        router.push(`/protected/contracts/${projectId}/deliverables/${id}`)
     }
 
   return (
@@ -132,6 +143,11 @@ export default function DeliverablesForm({projectId, initialData}: Props) {
                 !initialData?.deliverables?.length &&  "text-slate-500 italic"
             )}>
                 {!initialData?.deliverables?.length && "No Deliverables"}
+                <DeliverableList 
+                    onEdit ={onEdit}
+                    onReorder ={onReorder}
+                    items={initialData?.deliverables || []}
+                />
             </div>
         )}
         {!isEditing && (

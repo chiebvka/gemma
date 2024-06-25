@@ -8,6 +8,7 @@ import DescriptionForm from './_components/DescriptionForm';
 import ClientCard from './_components/ClientCard';
 import { getclients } from '@/actions/clients/client';
 import DeliverablesForm from './_components/DeliverablesForm';
+import { fetchDeliverables } from '@/actions/deliverables/deliver';
 
 type Props = {
   params: {
@@ -35,6 +36,10 @@ export default async function page({params}: Props) {
     let clients  = await getclients()
     clients = clients || []
     console.log(clients)
+
+    let deliverables  = await fetchDeliverables(project?.id)
+    deliverables = deliverables || []
+    // console.log(deliverables)
 
     const requiredFields = [
       project?.name,

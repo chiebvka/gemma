@@ -82,7 +82,7 @@ export default function TitleForm({initialData, id}: Props) {
     }
 
   return (
-    <Card className='mt-6 border bg-slate-100 border-black shadow-lg rounded-md'>
+    <Card className='mt-6 border bg-gradient-to-br from-[#f0f0f0] to-[#e0e0e0] shadow-lg rounded-md border-black'>
         <CardHeader className="font-medium flex flex-row items-center justify-between">
             Project Name
             <Button onClick={toggleEdit} variant="ghost">
@@ -106,7 +106,7 @@ export default function TitleForm({initialData, id}: Props) {
         </CardHeader>
         <CardContent>
             {!isEditing && (
-                <p className="text-sm  w-full border border-dashed -mt-2 border-black rounded-lg p-2">
+                <p className="text-sm  w-full border  bg-white/70 hover:border-sky-200 -mt-2  rounded-lg p-4">
                     {initialData.name}
                 </p>
             )}

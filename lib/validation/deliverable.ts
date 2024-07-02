@@ -17,6 +17,13 @@ export const deliverableOrder = z.object({
     position: z.number(),
 })
 
+export const completeDeliverable = z.object({
+    id: z.string(),
+    project_id: z.string(),
+    profile_id: z.string(),
+    isComplete: z.boolean()
+})
+
 export const reorderDeliverablesSchema = z.object({
     list: z.array(deliverableOrder),
   });

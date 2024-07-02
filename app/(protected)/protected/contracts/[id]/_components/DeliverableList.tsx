@@ -58,7 +58,8 @@ const onDragEnd = (result: DropResult) => {
     id: list.id,
     position: items.findIndex((item) => item.id === list.id)
   }));
-
+  
+  console.log("Bulk update data:", bulkUpdateData); 
   onReorder(bulkUpdateData);
 } 
 
@@ -81,23 +82,25 @@ if(!isMounted) {
                   {(provided) => (
                     <div
                       className={cn (
-                        "flex items-center gap-x-2 bg-slate-200 border-slate-200 border text-slate-700 rounded-md mb-3 text-sm",
-                        list.isComplete && "bg-sky-100 border-sky-200 text-sky-700"
+                        "flex items-center gap-x-2 bg-white/70 hover:border-sky-200  border text-slate-700 rounded-lg mb-3 text-sm",
+                        list.isComplete && "bg-gradient-to-br from-[#e0f0e0] to-[#c0e0c0]  "
                       )}
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                     >
                        <div
                             className={cn(
-                                "px-2 py-3 border-r border-r-slate-200 hover:bg-slate-300 rounded-l-md transition",
-                                list.isComplete && "border-r-sky-200 hover:bg-sky-200"
+                                "grid gap-2  w-full p-4 rounded-md shadow-md transition",
+                                list.isComplete && "bg-gradient-to-br from-[#e0f0e0] to-[#c0e0c0] hover:bg-sky-200"
                             )}
                             {...provided.dragHandleProps}
                         >
-                            <Grip className='h-5 w-5' />
-                        </div>
-                        {list.title}
-                        <div className='ml-auto pr-2 flex items-center gap-x-2'>    
+                            {/* <Grip className='h-5 w-5' /> */}
+                        <div className="flex items-center justify-between space-y-2">
+                          <span  className="text-sm font-medium">
+                            {list.title}
+                          </span>
+                          <div className='ml-auto pr-2 flex items-center gap-x-2'>    
                             <Badge className={cn(
                                 "bg-slate-500",
                                 list.isComplete && 
@@ -109,7 +112,17 @@ if(!isMounted) {
                                 onClick={() => onEdit(list.id)}
                                 className='w-4 h-4 cursor-pointer hover:opacity-75 transition'
                               />
+                          </div>
                         </div>
+                          <p className='text-xs text-muted-foreground line-clamp-2'>
+
+                          {list.description}
+                          </p>
+               
+                        </div>
+                  
+
+                   
                     </div>
 
                   )}

@@ -10,6 +10,14 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogHeader,
+    AlertDialogTitle,
+  } from "@/components/ui/alert-dialog"; 
+  import { Loader2 as SpinnerIcon } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -21,25 +29,28 @@ import { PlusCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { Tables } from '@/types/supabase';
-import { createDeliverable } from '@/actions/deliverables/deliver';
+import { createDeliverable, reorderDeliverable } from '@/actions/deliverables/deliver';
 import { profileConfig } from '@/config/profile';
 import DeliverableList from './DeliverableList';
+import axios from 'axios';
 
 type Deliverables = Tables<'deliverables'>;
 type Project = Tables<'projects'>;
 
 type Props = {
-    initialData: Project & { deliverables: Deliverables[]};
+    projectData: Project 
+    deliverableData: Deliverables[]
     projectId: string;
     
 }
 
 type DeliverableTitleValue = z.infer<typeof deliverableTitleSchema>
 
-export default function DeliverablesForm({projectId, initialData}: Props) {
+export default function DeliverablesForm({projectId, projectData, deliverableData}: Props) {
     const router = useRouter();
     const { toast } = useToast();
     const [isEditing, setIsEditing] = useState(false)
+    const [isUpdating, setIsUpdating] = useState<boolean>(false);
     const toggleEdit = () => setIsEditing((current) => !current)
 
     const form = useForm<DeliverableTitleValue>({
@@ -76,6 +87,28 @@ export default function DeliverablesForm({projectId, initialData}: Props) {
 
 
     const onReorder = async (updateData: { id: string; position: number}[]) => {
+        try {
+            setIsUpdating(true)
+
+            // const response = await reorderDeliverable({list: updateData}) 
+            await axios.put(`/api/projects/${projectId}/deliverables/reorder`, {
+                list: updateData
+            })
+            toast({
+                variant: "success",
+                title: "Success",
+                description: (profileConfig.successMessage),
+                })  
+            
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: (profileConfig.errorMessage),
+                })
+        } finally {
+            setIsUpdating(false)
+        }
 
     }
 
@@ -84,7 +117,21 @@ export default function DeliverablesForm({projectId, initialData}: Props) {
     }
 
   return (
-    <div className='relative mt-6 border bg-slate-100 rounded-md p-4'>
+    <div className='relative mt-6 border bg-gradient-to-br from-[#f0f0f0] to-[#e0e0e0] shadow-lg rounded-md p-4'>
+        <div className="flex items-center">
+             <AlertDialog open={isUpdating} onOpenChange={setIsUpdating}>
+                <AlertDialogContent className="font-sans">
+                    <AlertDialogHeader>
+                    <AlertDialogTitle className="text-center">
+                        Please wait
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="mx-auto text-center">
+                        <SpinnerIcon className="h-6 w-6 animate-spin" />
+                    </AlertDialogDescription>
+                    </AlertDialogHeader>
+                </AlertDialogContent>
+            </AlertDialog>
+        </div>
         <div className="font-medium flex items-center justify-between">
             Project Deliverables
             <Button onClick={toggleEdit} variant="ghost">
@@ -140,19 +187,19 @@ export default function DeliverablesForm({projectId, initialData}: Props) {
         {!isEditing && (
             <div className={cn(
                 "text-sm mt-2",
-                !initialData?.deliverables?.length &&  "text-slate-500 italic"
+                !deliverableData.length &&  "text-slate-500 italic"
             )}>
-                {!initialData?.deliverables?.length && "No Deliverables"}
+                {!deliverableData?.length && "No Deliverables"}
                 <DeliverableList 
                     onEdit ={onEdit}
                     onReorder ={onReorder}
-                    items={initialData?.deliverables || []}
+                    items={deliverableData || []}
                 />
             </div>
         )}
         {!isEditing && (
             <p className='text-xs text-muted-foreground mt-4'>
-                Drag and drop to reorder the chapters
+                Drag and drop to reorder your deliverables
             </p>
         )}
     </div>

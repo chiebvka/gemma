@@ -69,7 +69,7 @@ export default async function page({params}: Props) {
                   Course Setup
               </h1>
               <span className='text-sm text-slate-700'>
-                  {/* Complete all fields {completionTexts} */}
+                  Complete all fields {completionTexts}
               </span>
           </div>
           {/** ADD ACTIONS */}
@@ -108,7 +108,8 @@ export default async function page({params}: Props) {
                 </div>
               </div>
               <DeliverablesForm
-                initialData={project}
+                projectData={project}
+                deliverableData={deliverables}
                 projectId={project.id}
               />
             </div>

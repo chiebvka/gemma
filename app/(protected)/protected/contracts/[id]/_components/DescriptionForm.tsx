@@ -83,7 +83,7 @@ export default function DescriptionForm({initialData, id}: Props) {
     }
 
   return (
-    <Card className='mt-6 border bg-slate-100 border-black shadow-lg rounded-md'>
+    <Card className='mt-6 border bg-gradient-to-br from-[#f0f0f0] to-[#e0e0e0] shadow-lg rounded-md border-black'>
         <CardHeader className="font-medium flex flex-row items-center justify-between">
             Project Description
             <Button onClick={toggleEdit} variant="ghost">
@@ -110,7 +110,7 @@ export default function DescriptionForm({initialData, id}: Props) {
                 <Textarea 
                     rows={10} 
                     disabled 
-                    className="text-sm  w-full border border-dashed -mt-2  border-black rounded-lg p-2" 
+                    className="text-sm  w-full border font-medium bg-white/70 hover:border-sky-200  -mt-2 rounded-lg p-4" 
                     defaultValue={initialData.description}
                 />
                    

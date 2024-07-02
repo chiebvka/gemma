@@ -1,6 +1,6 @@
 "use server"
 
-import { deliverableOrder, deliverableSchema, deliverableTitleSchema, reorderDeliverablesSchema } from "@/lib/validation/deliverable";
+import { completeDeliverable, deliverableOrder, deliverableSchema, deliverableTitleSchema, reorderDeliverablesSchema } from "@/lib/validation/deliverable";
 import { createClient } from "@/utils/supabase/server";
 import { Description } from "@radix-ui/react-toast";
 import { z } from "zod";
@@ -72,6 +72,25 @@ export async function updatdeDeliverable(context:z.infer<typeof deliverableSchem
 
 }
 
+
+export async function deleteDeliverable(delivereableId: string){
+    const supabase = createClient();
+    try {
+        const { data: { user }} = await supabase.auth.getUser();
+        const { data, error} = await supabase
+        .from("deliverables")
+        .delete()
+        .eq("id", delivereableId)
+        .eq("profile_id", user?.id)
+
+        
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 export async function fetchDeliverables(projectId: string){
     const supabase = createClient();
     try {
@@ -123,3 +142,31 @@ export async function reorderDeliverable(context:z.infer<typeof deliverableOrder
         return null;
     }
 }
+
+
+export async function completeDeliverables(context:z.infer<typeof completeDeliverable>){
+    const supabase = createClient();
+    try {
+        const deliverableComplete = completeDeliverable.parse(context); 
+        const { data: { user }} = await supabase.auth.getUser();
+        const { data, error} = await supabase
+        .from("deliverables")
+        .update({
+            isComplete: deliverableComplete.isComplete
+        })
+        .eq("id", deliverableComplete.id)
+        .eq("project_id", deliverableComplete.project_id)
+        .eq("profile_id",user?.id)
+        .select()
+      
+        if(error){
+          console.log(error);
+          return null;
+        }
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+

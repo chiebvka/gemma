@@ -13,6 +13,19 @@ export async function PUT(
         }
 
         const { list } = await req.json();
+        console.log("Received list:", list);
+
+
+        for (let item of list) {
+            await supabase
+            .from("deliverables")
+            .update({
+                position: item.position
+            })
+            .eq("id", item.id)
+            .eq("project_id", params.projectId)
+            .eq("profile_id",user?.id)
+        }
 
         const {data: ownProject, error} = await supabase
         .from("deliverables")
@@ -26,14 +39,24 @@ export async function PUT(
         }
 
 
-        for (let item of list) {
-            await supabase
-            .from("deliverables")
-            .update({
-                position: item.position
-            })
-            .eq("id", item.id)
-        }
+        // const updatePromises = list.map(async (item: { id: string; position: number }) => {
+        //     const { data, error } = await supabase
+        //         .from("deliverables")
+        //         .update({ position: item.position })
+        //         .eq("id", item.id)
+        //         .eq("project_id", params.projectId)
+        //         .eq("profile_id", user?.id);
+
+        //     if (error) {
+        //         console.log("Error updating deliverable:", error);
+        //         throw error;
+        //     }
+        // });
+
+        // await Promise.all(updatePromises);
+
+
+
 
         return new NextResponse("Success", { status: 200 });
 

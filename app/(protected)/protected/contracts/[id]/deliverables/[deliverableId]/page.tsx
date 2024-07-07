@@ -1,8 +1,13 @@
 import { createClient } from '@/utils/supabase/server';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, CalendarDays, Eye, LayoutDashboard, Video } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react'
 import DeliverableActions from './_components/DeliverableActions';
+import { IconBadge } from '@/components/IconBadge';
+import DeliverableTitle from './_components/DeliverableTitle';
+import DeliverableDescription from './_components/DeliverableDescription';
+import DeliverableDate from './_components/DeliverableDate';
+import DeliverableSwitch from './_components/DeliverableSwitch';
 
 type Props = {
   params: {
@@ -30,10 +35,8 @@ export default async function page({params}: Props) {
   const requiredFields = [
     deliverabales?.title,
     deliverabales?.description,
-    deliverabales?.tasks,
     deliverabales?.due_date,
-    deliverabales?.amount_due,
-
+    deliverabales?.isComplete,
   ];
 
   const totalFields = requiredFields.length;
@@ -41,7 +44,10 @@ export default async function page({params}: Props) {
 
   const completionText = `(${completedFields}/${totalFields})`
 
-  const isComplete = requiredFields.every(Boolean);
+  const isComplete = deliverabales?.isComplete
+
+  let projectsId = deliverabales?.project_id
+  let delivereableId = deliverabales?.id
 
   return (
     <div  className="flex-1 w-full p-4 max-w-5xl mx-auto border-2 border-green-600 flex flex-col space-x-2 items-center">
@@ -53,21 +59,58 @@ export default async function page({params}: Props) {
               <ArrowLeft className='h-4 w-4 mr-2' />
               Back to project setup
         </Link>
-        <div className="flex  w-full items-center border-2 border-black justify-between">
+        <div className="flex  w-full items-center  justify-between">
           <div className="flex flex-col gap-y-2">
                 <h1 className="text-2xl font-medium">
-                    Course Setup
+                    Deliverble Setup
                 </h1>
                 <span className='text-sm text-slate-700'>
-                    Complete all fields {completionText}
+                    Completed fields {completionText}
                 </span>
           </div>
           <DeliverableActions 
-            disabled={false} 
-            projectId={''} 
-            deliverableId={''} 
-            isComplete={false}            
+            // disabled={false} 
+            projectId={projectsId} 
+            deliverableId={delivereableId} 
+            isComplete={isComplete}            
           />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
+          <div className="space-y-4">
+            <div>
+              <div className="flex items-center space-x-2">
+                <IconBadge icon={LayoutDashboard} />
+                <h2 className="text-xl">Customize your chapter</h2>
+              </div>
+              <DeliverableTitle 
+                initialData={deliverabales}
+                id={params?.id}
+                deliverableId={params?.deliverableId}
+              />
+
+              <DeliverableDescription 
+                initialData={deliverabales}
+                id={params?.id}
+                deliverableId={params?.deliverableId}
+              />
+            </div>
+          </div>
+          <div>
+            <div className="flex items-center gap-x-2">
+              <IconBadge icon={CalendarDays} />
+              <h2 className='text-xl'>Choose a due date</h2>
+            </div>
+            <DeliverableDate 
+              initialData={deliverabales}
+              id={params?.id}
+              deliverableId={params?.deliverableId}
+            />
+            <DeliverableSwitch 
+              initialData={deliverabales}
+              id={params?.id}
+              deliverableId={params?.deliverableId}
+            />
+          </div>
         </div>
       </div>
     </div>

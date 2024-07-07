@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { Grip, Pencil } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tables } from '@/types/supabase';
+import { clsx } from 'clsx';
 
 
 type Deliverables = Tables<'deliverables'>;
@@ -101,17 +102,26 @@ if(!isMounted) {
                             {list.title}
                           </span>
                           <div className='ml-auto pr-2 flex items-center gap-x-2'>    
-                            <Badge className={cn(
-                                "bg-slate-500",
-                                list.isComplete && 
-                                "bg-emerald-500"
-                            )}>
-                                {list.isComplete ? " Complete" : "In Progress"}
-                            </Badge>
-                            <Pencil 
-                                onClick={() => onEdit(list.id)}
-                                className='w-4 h-4 cursor-pointer hover:opacity-75 transition'
-                              />
+                            <span className='border-r pr-2'>
+                                {list.isComplete ? <div className="flex items-center gap-1">
+                                  <div className="h-3 w-3 rounded-full bg-green-500" />
+                                  <div className="text-xs text-emerald-700">Complete</div>
+                                </div> :       <div className="flex items-center gap-1">
+                                      <div className="h-3 w-3 rounded-full bg-yellow-500 animate-pulse" />
+                                      <div className="text-xs text-black">In Progress</div>
+                                    </div>}
+                            </span>
+                            <div 
+                              onClick={() => onEdit(list.id)} 
+                              className='flex items-center space-x-1 cursor-pointer hover:opacity-75 transition'>
+                              <Pencil 
+                                  
+                                  className='w-3 h-3 '
+                                />
+                                <span className="text-xs">
+                                  Edit
+                                </span>
+                            </div>
                           </div>
                         </div>
                           <p className='text-xs text-muted-foreground line-clamp-2'>

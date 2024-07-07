@@ -1,6 +1,9 @@
 "use client"
-
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useRouter } from 'next/navigation';
 import {
     Form,
     FormControl,
@@ -9,7 +12,14 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-} from "@/components/ui/form";
+  } from "@/components/ui/form"; 
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"; 
 import {
     Card,
     CardContent,
@@ -18,96 +28,100 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from 'next/navigation';
-import { useToast } from '@/components/ui/use-toast';
-import { Button } from '@/components/ui/button';
-import { Pencil, PlusCircle } from 'lucide-react';
-import { profileConfig } from '@/config/profile';
-import { Input } from '@/components/ui/input';
-import { projectTitleSchema } from '@/lib/validation/project';
-import { updateProjectTitle } from '@/actions/projects/project';
+import { Pencil, PlusCircle, Loader2 as SpinnerIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import Link from 'next/link';
+import { useToast } from "@/components/ui/use-toast";
+import { deliverableTitleSchema } from '@/lib/validation/deliverable';
+import { updatdeDeliverableTitle } from '@/actions/deliverables/deliver';
+import { deliverableConfig } from '@/config/deliverables';
+
+
+
+
+
 
 type Props = {
     initialData: {
-        name: string
+        title: string
     };
-    id: string
+    id: string;
+    deliverableId: string
 }
-type ProjectNameFormValues = z.infer<typeof projectTitleSchema>
 
-export default function TitleForm({initialData, id}: Props) {
+type DeliverableTitleValue = z.infer<typeof deliverableTitleSchema>
+
+export default function DeliverableTitle({initialData, id, deliverableId}: Props) {
     const router = useRouter();
     const { toast } = useToast();
     const [isEditing, setIsEditing] = useState(false)
     const toggleEdit = () => setIsEditing((current) => !current)
 
-    const defaultValues: Partial<ProjectNameFormValues> = {
-        name: initialData?.name || "",
+    const defaultValues: Partial<DeliverableTitleValue> = {
+        title: initialData?.title || "",
     };
 
-    const form = useForm<ProjectNameFormValues>({
-        resolver: zodResolver(projectTitleSchema),
+    const form = useForm<DeliverableTitleValue>({
+        resolver: zodResolver(deliverableTitleSchema),
         defaultValues,
         mode: "onChange",
     });
 
-
     const { isSubmitting, isValid } = form.formState
-    async function onSubmit(data:ProjectNameFormValues) {
-        const response = await updateProjectTitle({
-            name: data?.name ?? '',
-            id: id
-        })  
-        
+
+    async function onSubmit(data:DeliverableTitleValue){
+        const response = await updatdeDeliverableTitle({
+            title: data?.title || "",
+            id: deliverableId,
+            project_id: id
+        })
+
         console.log(response)
-        if (response) {
+
+        if(response) {
             toast({
                 variant: "success",
                 title: "Success",
-                description: (profileConfig.successMessage),
-                })  
-                location.reload()   
+                description: (deliverableConfig.deliverableTitleUpdateSuccess),
+            })
+            location.reload()  
         } else {
             toast({
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",
-                description: (profileConfig.errorMessage),
+                description: (deliverableConfig.deliverableTitleUpdateError),
                 })
+            }
         }
-
- 
-    }
+    
 
   return (
     <Card className='mt-6 border bg-gradient-to-br from-[#f0f0f0] to-[#e0e0e0] shadow-lg rounded-md border-black'>
         <CardHeader className="font-medium flex flex-row items-center justify-between">
-            Project Name
+            Deliverable Title
             <Button onClick={toggleEdit} variant="ghost">
             {isEditing && (
-                    <>Cancel</>
-                )} 
-                {!isEditing && !initialData?.name && (
-                    <span className='text-xs flex'>
-                        <PlusCircle className='h-4 w-4 mr-1' />
-                        Add Business Name
-                    </span>
-                )}
-
-                {!isEditing && initialData?.name && (
-                    <>
-                        <Pencil className='h-4 w-4 mr-2' />
-                        Edit Project Name
-                    </>
-                )}
+                <>Cancel</>
+            )} 
+            {!isEditing && !initialData?.title && (
+                <span className='text-xs flex'>
+                    <PlusCircle className='h-4 w-4 mr-1' />
+                    Add Deliverable Title
+                </span>
+            )}
+            {!isEditing && initialData?.title && (
+                <>
+                    <Pencil className='h-4 w-4 mr-2' />
+                    Edit Deliverable Title
+                </>
+            )}
             </Button>
         </CardHeader>
         <CardContent>
             {!isEditing && (
-                <p className="text-sm  w-full border  bg-white/70 hover:border-sky-200 -mt-2  rounded-lg p-4">
-                    {initialData.name}
+                <p className="text-sm  w-full border border-black/60 bg-white/70 hover:border-sky-200 -mt-2  rounded-lg p-4">
+                    {initialData?.title}
                 </p>
             )}
             {isEditing && (
@@ -118,21 +132,21 @@ export default function TitleForm({initialData, id}: Props) {
                     >
                         <FormField 
                             control={form.control}
-                            name='name'
+                            name='title'
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>
-                                        Project Title
+                                        {/* Deliverable Title */}
                                     </FormLabel>
                                     <FormControl>
                                         <Input 
                                             disabled={isSubmitting}
-                                            placeholder="Your Project Name"
+                                            placeholder="Your Deliverable Title"
                                             {...field}
                                         />
                                     </FormControl>
                                     <FormDescription>
-                                        Your project name
+                                        Your deliverable title
                                     </FormDescription>
                                     <FormMessage />
                                 </FormItem>
@@ -143,7 +157,7 @@ export default function TitleForm({initialData, id}: Props) {
                                 disabled={!isValid || isSubmitting}
                                 type='submit'
                             >
-                                Save
+                                Update Title
                             </Button>
                         </div>
                     </form>

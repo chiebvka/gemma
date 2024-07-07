@@ -9,6 +9,28 @@ export const deliverableTitleSchema = z.object({
     project_id: z.string().optional()
 })
 
+export const deliverableStatus = z.object({
+    isComplete: z.boolean(),
+    id: z.string().optional(),
+    project_id: z.string().optional()
+})
+
+export const deliverableDecriptionSchema = z.object({
+    description: z.string().min(2, {
+        message: "Deliverable description must be at least 2 characters.",
+    }),
+    id: z.string().optional(),
+    project_id: z.string().optional()
+})
+
+export const deliverableDate = z.object({
+    due_date: z.date({
+        required_error: "A due date is required"
+    }),
+    id: z.string().optional(),
+    project_id: z.string().optional()
+})
+
 
 export const deliverableOrder = z.object({
     id: z.string(),

@@ -1,26 +1,9 @@
 "use client"
 
 import React, { useState }  from 'react';
-import {
-    Form,
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import {
-    AlertDialog,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogHeader,
-    AlertDialogTitle,
-  } from "@/components/ui/alert-dialog"; 
-  import { Loader2 as SpinnerIcon, Trash } from "lucide-react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+
+import { Loader2 as SpinnerIcon, Trash } from "lucide-react";
+
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from "@/components/ui/button";
@@ -64,13 +47,7 @@ export default function DeliverableActions({ projectId, deliverableId, isComplet
                 })
         }  finally {
             setIsUpdating(false);
-            }
-      
-
-
-   
-          
-
+            }     
     }
 
   return (

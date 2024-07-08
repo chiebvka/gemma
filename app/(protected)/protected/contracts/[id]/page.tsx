@@ -6,9 +6,13 @@ import { FolderPen } from 'lucide-react';
 import TitleForm from './_components/TitleForm';
 import DescriptionForm from './_components/DescriptionForm';
 import ClientCard from './_components/ClientCard';
+import { ArrowLeft, CalendarDays, Eye, LayoutDashboard, Video } from 'lucide-react';
+import Link from 'next/link';
 import { getclients } from '@/actions/clients/client';
 import DeliverablesForm from './_components/DeliverablesForm';
 import { fetchDeliverables } from '@/actions/deliverables/deliver';
+import DeliverableActions from './deliverables/[deliverableId]/_components/DeliverableActions';
+import ProjectActions from './_components/ProjectActions';
 
 type Props = {
   params: {
@@ -22,12 +26,18 @@ export default async function page({params}: Props) {
 
   const {data: project, error} = await supabase 
     .from("projects")
-    .select("*")
+    .select(`
+      *,
+      client_id(id, name, email)
+      `)
     .eq('profile_id', user?.id)
     .eq( 'id', params?.id)
     .single()
 
     console.log(project)
+
+    const projectId = project?.id
+    const projectStatus = project?.status
     
     if (error || !project) {
       return <NotFound />;
@@ -63,22 +73,32 @@ export default async function page({params}: Props) {
 
   return (
     <div className="flex-1 w-full p-4 max-w-5xl mx-auto border-2 border-green-600 flex flex-col space-x-2 items-center">
-        <div className="flex flex-col w-full items-center border-2 border-black justify-between">
+      <div className="w-full">
+        <div className=" w-full items-center border-2 border-black ">
+        <Link 
+              href={`/protected/contracts`}
+              className='flex items-center text-sm hover:opacity-75 transition mb-6'
+            >
+              <ArrowLeft className='h-4 w-4 mr-2' />
+              Back to projects list
+        </Link>
+        <div className="flex  w-full items-center  justify-between">
           <div className="flex flex-col gap-y-2">
-              <h1 className="text-2xl font-medium">
-                  Course Setup
-              </h1>
-              <span className='text-sm text-slate-700'>
-                  Complete all fields {completionTexts}
-              </span>
+                <h1 className="text-2xl font-medium">
+                    Project Setup
+                </h1>
+                <span className='text-sm text-slate-700'>
+                    Completed fields {completionTexts}
+                </span>
           </div>
-          {/** ADD ACTIONS */}
-          {/* <Actions
-              disabled={!isComplete}
-              courseId={params.courseId}
-              isPublished={course.isPublished}
-          /> */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-16">
+          <ProjectActions
+            projectId={projectId}
+            projectStatus={projectStatus}
+          />
+        </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 border-2 border-red-600 gap-6 mt-16">
+          <div className="space-y-4">
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={FolderPen} />
@@ -89,6 +109,7 @@ export default async function page({params}: Props) {
                 id={project.id}
               />
               <ClientCard 
+                initialData={project}
                 clients={clients}
               />
               <DescriptionForm 
@@ -100,21 +121,22 @@ export default async function page({params}: Props) {
                 id={project.id}
               />
             </div>
-            <div className="space-y-6">
-              <div>
-                <div className="flex items-center gap-x-2">
-                  <IconBadge icon={FolderPen} />
-                  <h2 className="text-xl">Customize your course</h2>
-                </div>
+          </div>
+          <div>
+            <div>
+              <div className="flex items-center gap-x-2">
+                <IconBadge icon={FolderPen} />
+                <h2 className="text-xl">Customize your course</h2>
               </div>
-              <DeliverablesForm
-                projectData={project}
-                deliverableData={deliverables}
-                projectId={project.id}
-              />
             </div>
+            <DeliverablesForm
+              projectData={project}
+              deliverableData={deliverables}
+              projectId={project.id}
+            />
           </div>
         </div>
+      </div>
     </div>
   )
 }

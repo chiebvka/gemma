@@ -30,6 +30,7 @@ import { projectTitleSchema } from '@/lib/validation/project';
 import { profileConfig } from '@/config/profile';
 import { projectTitle } from '@/actions/projects/project';
 import { User } from '@supabase/supabase-js';
+import { projectConfig } from '@/config/project';
 
 type Props = {
 
@@ -53,10 +54,8 @@ export default function CreateProject({}: Props) {
 
     async function onSubmit(data:ProjectTitleValues) {
         setIsUpdating(true)
-        // const { data: { user }} = await supabase.auth.getUser();
         const response = await projectTitle({
             name: data?.name ?? '',
-            // profile_id: data?.profile_id ?? ''
         })
         setIsUpdating(false);
 
@@ -64,14 +63,14 @@ export default function CreateProject({}: Props) {
             toast({
                 variant: "success",
                 title: "Success",
-                description: profileConfig.successMessage,
+                description: projectConfig.projectCreateSuccess,
             });
             router.push("/protected/contracts/" + response?.id);
         } else {
             toast({
                 variant: "destructive",
                 title: "Unexpected error",
-                description: "An unknown error occurred",
+                description: projectConfig.projectCreateError,
             });
         }     
     }
@@ -79,8 +78,8 @@ export default function CreateProject({}: Props) {
   return (
     <div>
         <div>
-            <h1>Name your project</h1>
-            <p>What would you like to name your course? Don&apos;t worry you can change it later</p>
+            <h1 className='font-bold text-2xl'>Name your project</h1>
+            <p className='text-muted-foreground text-sm my-3'>What would you like to name your project? You ca always edit the name later</p>
             <Form {...form}>
                 <form 
                     onSubmit={form.handleSubmit(onSubmit)}
@@ -92,17 +91,17 @@ export default function CreateProject({}: Props) {
                         render={({ field }) => (
                             <FormItem>
                             <FormLabel>
-                                Course Title
+                                Project Name
                             </FormLabel>
                             <FormControl>
                                 <Input 
                                     disabled={isUpdating}
-                                    placeholder="e.g. `Advanced Web Development`"
+                                    placeholder="e.g. ABC's blog posts for 2024"
                                     {...field}
                                 />
                             </FormControl>
                             <FormDescription>
-                                What will you teach in this course
+                                What is the project about?
                             </FormDescription>
                             <FormMessage />
                         </FormItem>

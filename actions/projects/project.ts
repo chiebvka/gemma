@@ -1,5 +1,5 @@
 "use server"
-import { projectDescriptionSchema, projectTitleSchema } from "@/lib/validation/project";
+import { projectClientSchema, projectDescriptionSchema, projectTitleSchema } from "@/lib/validation/project";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -60,6 +60,41 @@ export async function updateProjectTitle(context:z.infer<typeof projectTitleSche
             return null;
           }
         
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+export async function updateProjectClient(context: z.infer<typeof projectClientSchema>){
+    const supabase = createClient();
+
+        const project = projectClientSchema.parse(context);
+        const { data: { user }} = await supabase.auth.getUser();
+        const { data, error} = await supabase
+        .from("projects")
+        .update({
+            client_id: project?.client_id
+        })
+        .eq("id", project?.id)
+        .eq("profile_id", user?.id)
+
+
+        return data
+
+        
+}
+
+export async function deleteProject({ projectId }: { projectId: string }){
+    const supabase = createClient();
+    try {
+        const { data: { user }} = await supabase.auth.getUser();
+        const { data, error} = await supabase
+        .from("projects")
+        .delete()
+        .eq("id", projectId)
+        .eq("profile_id", user?.id)
+
     } catch (error) {
         console.log(error);
         return null;

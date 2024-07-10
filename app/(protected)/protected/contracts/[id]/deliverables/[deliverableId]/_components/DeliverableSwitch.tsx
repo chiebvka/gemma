@@ -94,12 +94,12 @@ export default function DeliverableSwitch({initialData, id, deliverableId}: Prop
                     control={form.control}
                     name='isComplete'
                     render={({ field }) => (
-                        <FormItem className=' w-full flex flex-row items-center justify-between border border-black/60 bg-white/70 hover:border-sky-200 -mt-2  rounded-lg p-4'>
+                        <FormItem className=' w-full flex flex-row items-center justify-between border bg-white/70 hover:border-sky-200 -mt-2  rounded-lg p-4'>
                             <div className="space-y-0.5">
-                                <FormLabel className="text-base">
+                                <FormLabel className="text-sm">
                                 Marketing emails
                                 </FormLabel>
-                                <FormDescription className='text-black'>
+                                <FormDescription className='text-black text-xs'>
                                     Done with this deliverable? just switch on the button and submit below
                                 </FormDescription>
                             </div>

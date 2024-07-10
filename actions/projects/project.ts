@@ -1,6 +1,7 @@
 "use server"
-import { projectClientSchema, projectDescriptionSchema, projectTitleSchema } from "@/lib/validation/project";
+import { projectAmountSchema, projectClientSchema, projectDescriptionSchema, projectNotificationSchema, projectTitleSchema } from "@/lib/validation/project";
 import { createClient } from "@/utils/supabase/server";
+import { equal } from "assert";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -55,10 +56,7 @@ export async function updateProjectTitle(context:z.infer<typeof projectTitleSche
 
         return data 
         
-        if (error) {
-            console.log(error);
-            return null;
-          }
+
         
     } catch (error) {
         console.log(error);
@@ -85,6 +83,26 @@ export async function updateProjectClient(context: z.infer<typeof projectClientS
         
 }
 
+export async function updateProjectAmount(context: z.infer<typeof projectAmountSchema>){
+    const supabase = createClient();
+
+        const project = projectAmountSchema.parse(context);
+        const { data: { user }} = await supabase.auth.getUser();
+        console.log("Updating project with ID:", project?.id); // Log the project ID
+        console.log("Updating project for user:", user?.id); 
+        const { data, error } = await supabase
+        .from("projects")
+        .update({
+            currency: project?.currency,
+            amount: project?.amount
+        })
+        .eq("id", project?.id)
+        .eq("profile_id", user?.id)
+
+        return data
+
+}
+
 export async function deleteProject({ projectId }: { projectId: string }){
     const supabase = createClient();
     try {
@@ -99,6 +117,23 @@ export async function deleteProject({ projectId }: { projectId: string }){
         console.log(error);
         return null;
     }
+}
+
+export async function projectNotificationComplete(context:z.infer<typeof projectNotificationSchema>){
+    const supabase = createClient();
+
+        const project = projectNotificationSchema.parse(context);
+        const { data: { user }} = await supabase.auth.getUser();
+        const { data, error} = await supabase
+        .from("projects")
+        .update({
+            isDraft: project.isDraft,
+            signature: project.signature
+        })
+        .eq("id", project?.id)
+        .eq("profile_id", user?.id)
+
+        return data
 }
 
 export async function updateProjectDescription(context:z.infer<typeof projectDescriptionSchema>){

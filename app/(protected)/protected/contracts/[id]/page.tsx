@@ -13,6 +13,8 @@ import DeliverablesForm from './_components/DeliverablesForm';
 import { fetchDeliverables } from '@/actions/deliverables/deliver';
 import DeliverableActions from './deliverables/[deliverableId]/_components/DeliverableActions';
 import ProjectActions from './_components/ProjectActions';
+import ProjectAmount from './_components/ProjectAmount';
+import TrackingCard from './_components/TrackingCard';
 
 type Props = {
   params: {
@@ -56,9 +58,9 @@ export default async function page({params}: Props) {
       project?.description,
       project?.currency,
       project?.amount,
-      project?.start_date,
-      project?.due_date,
-      project?.deliverable_id
+      project?.isDraft,
+      project?.signature,
+      
     ]
 
     const totalFields = requiredFields.length;
@@ -70,6 +72,7 @@ export default async function page({params}: Props) {
     const completionTexts = `(${completedFields}/${totalFields})`
 
     const isComplete = requiredFields.every(Boolean);
+    console.log(isComplete)
 
   return (
     <div className="flex-1 w-full p-4 max-w-5xl mx-auto border-2 border-green-600 flex flex-col space-x-2 items-center">
@@ -116,13 +119,15 @@ export default async function page({params}: Props) {
                 initialData={project}
                 id={project.id}
               />
+
+              
               <TitleForm 
                 initialData={project}
                 id={project.id}
               />
             </div>
           </div>
-          <div>
+          <div className="space-y-4">
             <div>
               <div className="flex items-center gap-x-2">
                 <IconBadge icon={FolderPen} />
@@ -133,6 +138,14 @@ export default async function page({params}: Props) {
               projectData={project}
               deliverableData={deliverables}
               projectId={project.id}
+            />
+            <ProjectAmount
+              initialData={project}
+              id={project.id}
+            />
+            <TrackingCard 
+              initialData={project}
+              id={project.id}
             />
           </div>
         </div>

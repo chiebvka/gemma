@@ -67,7 +67,11 @@ export default function CreateButton({userDetails}: Props) {
     <div className='w-full'>
         <div className='flex justify-between'>
         <div className="flex flex-col space-y-4 ">
+        {!userDetails?.connectedAccountId ? 
             <h1 className='lg:text-3xl md:text-2xl text-lg  font-extrabold  '>Link Payment</h1>
+            :
+            <h1 className='lg:text-3xl md:text-2xl text-lg  font-extrabold'>Processor Connected</h1>
+        }
         </div>
 
             {!userDetails?.connectedAccountId ? 
@@ -84,11 +88,18 @@ export default function CreateButton({userDetails}: Props) {
                 </Button>
             }
         </div>
+        {!userDetails?.connectedAccountId ? 
             <p className='text-sm my-3 md:text-base'>Seems like you haven't connected your payment method yet </p>
+            :
+            <p className='text-sm my-3 md:text-base'>Looks like you're all setup with your processor </p>
+        }
         <Separator className='my-5' />
+        {!userDetails?.connectedAccountId ?
         <div className="h-96 border-2 border-dashed border-palette">
             <img src="/dashempty.png" alt="" className="object-contain w-full h-full" />
         </div>
+         : <></>
+        }
         <AlertDialog open={isUpdating} onOpenChange={setIsUpdating}>
                 <AlertDialogContent className="font-sans">
                 <AlertDialogHeader>

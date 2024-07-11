@@ -97,7 +97,7 @@ export default function DeliverableSwitch({initialData, id, deliverableId}: Prop
                         <FormItem className=' w-full flex flex-row items-center justify-between border bg-white/70 hover:border-sky-200 -mt-2  rounded-lg p-4'>
                             <div className="space-y-0.5">
                                 <FormLabel className="text-sm">
-                                Marketing emails
+                                    Deliverable Status
                                 </FormLabel>
                                 <FormDescription className='text-black text-xs'>
                                     Done with this deliverable? just switch on the button and submit below

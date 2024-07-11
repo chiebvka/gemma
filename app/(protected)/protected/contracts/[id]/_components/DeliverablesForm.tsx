@@ -117,7 +117,7 @@ export default function DeliverablesForm({projectId, projectData, deliverableDat
     }
 
   return (
-    <div className='relative mt-6 border bg-gradient-to-br from-[#f0f0f0] to-[#e0e0e0] shadow-lg rounded-md p-4'>
+    <div className=' mt-6 border bg-gradient-to-br from-[#f0f0f0] to-[#e0e0e0] shadow-lg rounded-md p-4 border-black'>
         <div className="flex items-center">
              <AlertDialog open={isUpdating} onOpenChange={setIsUpdating}>
                 <AlertDialogContent className="font-sans">
@@ -140,7 +140,7 @@ export default function DeliverablesForm({projectId, projectData, deliverableDat
                 ): (
                     <>
                         <PlusCircle className='h-4 w-4 mr-2' />
-                        Add a Chapter
+                        Add Deliverable
                     </>
                 )}
             </Button>
@@ -157,17 +157,17 @@ export default function DeliverablesForm({projectId, projectData, deliverableDat
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>
-                                    Project Description
+                                    Project Deliverable
                                 </FormLabel>
                                 <FormControl>
                                     <Input 
                                         disabled={isSubmitting}
-                                        placeholder="Your project description"
+                                        placeholder="Your Deliveranle Title"
                                         {...field}
                                     />
                                 </FormControl>
                                 <FormDescription>
-                                    The details and short description of the project 
+                                    A short title name for your deliverable
                                 </FormDescription>
                                 <FormMessage />
                             </FormItem>

@@ -37,6 +37,28 @@ export async function projectTitle(context:z.infer<typeof projectTitleSchema>) {
     }
 }
 
+
+export async function getProjects(){
+    const supabase = createClient();
+    try {
+        const {data: { user } } = await supabase.auth.getUser();
+
+        const {data: project, error} = await supabase 
+          .from("projects")
+          .select(`
+            *,
+            client_id(id, name, email)
+            `)
+          .eq('profile_id', user?.id)
+
+          return project
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 export async function updateProjectTitle(context:z.infer<typeof projectTitleSchema>){
     const supabase = createClient();
     try {

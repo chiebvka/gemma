@@ -251,7 +251,7 @@ async function onSubmit(data:ProjectClientValues){
                             </Popover>
                   
                             <FormDescription>
-                                The details and short description of the project 
+                              Select from a list of all your clients 
                             </FormDescription>
                             <FormMessage />
                         </FormItem>

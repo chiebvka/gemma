@@ -34,13 +34,16 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { ArrowDownUp, ChevronDown, MoreHorizontal } from 'lucide-react';
+import { format } from 'date-fns';
+import Link from 'next/link';
 
-type Payment = {
+type Project = {
     id: string
-    date: Date
-    status: "pending" | "processing" | "success" | "failed"
-    email: string
+    created_at: Date
+    status: "started" | "processing" | "success" | "failed"
+    amount: number
     name: string
+    description: string
   }
 
 const dates = new Date()
@@ -48,7 +51,7 @@ console.log(dates.toDateString())
 
 type Props = {}
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<Project>[] = [
   // {
   //   id: "select",
   //   header: ({ table }) => (
@@ -80,44 +83,45 @@ export const columns: ColumnDef<Payment>[] = [
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: "Project Name",
     cell: ({ row }) => (
       <div className="capitalize">{row.getValue("name")}</div>
     ),
   },
   {
-    accessorKey: "email",
+    accessorKey: "description",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Client Email
+          Project Description
     
           <ArrowDownUp className="ml-2 h-4 w-4" />
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
+    cell: ({ row }) => <div className="lowercase line-clamp-1 max-w-44 ">{row.getValue("description")}</div>,
   },
   {
-    accessorKey: "date",
+    accessorKey: "created_at",
     header: ({ column }) => {
       return (
         <div
           className='text-right flex items-end justify-end cursor-pointer'
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Date Issued
+          Created on
           <ArrowDownUp className="ml-2 h-4 w-4" />
         </div>
       )
     },
     // header: () => <div className="text-right">Amount</div>,
     cell: ({ row }) => {
-      const dateValue = row.getValue("date") as Date;
-      const formattedDate = dateValue.toLocaleDateString(); 
+      const dateValue = row.getValue("created_at") as Date;
+      const formattedDate = format(dateValue, "PPP")
+      // dateValue?.toLocaleDateString(); 
       // const amount = parseFloat(row.getValue("amount"))
  
       // Format the amount as a dollar amount
@@ -133,7 +137,7 @@ export const columns: ColumnDef<Payment>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original
+      const project = row.original
  
       return (
         <DropdownMenu>
@@ -146,14 +150,16 @@ export const columns: ColumnDef<Payment>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
+            {/* <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(project.id)}
             >
-              Copy payment ID
+              Copy project ID
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuSeparator /> */}
+            <DropdownMenuItem>
+              <Link href={`/protected/contracts/${project.id}`}>Edit Project</Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem>View project details</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )

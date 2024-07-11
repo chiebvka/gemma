@@ -48,7 +48,7 @@ if (error) {
       } */}
       {/* <CreateHeadings title='Link Payment' description='Choose your payment method and connect your api keys to add them to your invoice'  /> */}
         <CreateButton userDetails={userDetails} />
-        <EmptyProcessor title='Processor Connected' description="Looks like you're all setup on the processor side of things" />
+        {/* <EmptyProcessor title='Processor Connected' description="Looks like you're all setup on the processor side of things" /> */}
         <div className='w-full md:w-10/12 mx-auto'>
           <ProcessorForm userDetails={userDetails} />
         </div>

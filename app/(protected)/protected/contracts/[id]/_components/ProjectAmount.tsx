@@ -151,7 +151,7 @@ export default function ProjectAmount({initialData, id}: Props) {
                                                 <SelectContent>
                                                     <SelectItem value="$">$</SelectItem>
                                                     <SelectItem value="₦">₦</SelectItem>
-                                                    <SelectItem value="GPB">GPB</SelectItem>
+                                                    {/* <SelectItem value="GPB">GPB</SelectItem> */}
                                                 </SelectContent>
                                             </Select>
                                         <FormMessage />

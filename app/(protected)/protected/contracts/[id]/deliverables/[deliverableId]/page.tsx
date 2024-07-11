@@ -1,5 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
-import { ArrowLeft, CalendarDays, Eye, LayoutDashboard, Video } from 'lucide-react';
+import { ArrowLeft, CalendarDays, QrCode } from 'lucide-react';
 import Link from 'next/link';
 import React from 'react'
 import DeliverableActions from './_components/DeliverableActions';
@@ -79,8 +79,8 @@ export default async function page({params}: Props) {
           <div className="space-y-4">
             <div>
               <div className="flex items-center space-x-2">
-                <IconBadge icon={LayoutDashboard} />
-                <h2 className="text-xl">Customize your chapter</h2>
+                <IconBadge icon={QrCode} />
+                <h2 className="text-xl">Complete the deliverable details</h2>
               </div>
               <DeliverableTitle 
                 initialData={deliverabales}

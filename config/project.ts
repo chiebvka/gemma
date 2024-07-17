@@ -13,6 +13,8 @@ export const projectConfig = {
     projectAmountError: "Couldn't update Project Amount, Let's try that again",
     projectStatusSuccess: "Project status has been updated successfully",
     projectStatusError: "Couldn't update Project status, Let's try that again",
+    projectInvoiceSuccess: "Invoice initiated successfully",
+    projectInvoiceError: "Couldn't initiate project invoice, Let's try that again",
     primarySubTitle: "Update your personal information.",
     secondaryTitle: "User information",
     secondarySubTitle: "Update your user information",

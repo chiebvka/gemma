@@ -70,13 +70,13 @@ import { connected } from 'process';
 import { useRouter } from 'next/navigation';
 import { financeConfig } from '@/config/finance';
 
+type Profile = Tables<'profiles'>;
 
 interface Props  {
     userDetails: Profile,
     // stripeAccount: string,
   }
   
-type Profile = Tables<'profiles'>;
 type FinanceFormValues = z.infer<typeof FinanceFormSchema>
 
 export default function FinanceForm({userDetails}: Props) {
@@ -134,14 +134,6 @@ export default function FinanceForm({userDetails}: Props) {
 
         console.log(accounts)
         setIsUpdating(false)
-
-        // if(!accounts) {
-        //     toast({
-        //         variant: "destructive",
-        //         title: "Uh oh! Something went wrong.",
-        //         description: (profileConfig.errorMessage),
-        //       })
-        // }
     }
 
 
@@ -267,7 +259,7 @@ export default function FinanceForm({userDetails}: Props) {
                                     />
                                     <h3 className="text-sm md:text-lg font-medium">PayPal</h3>
                                 </div>
-                                {!userDetails?.connectedAccountId ?
+                                {!userDetails?.paypalId ?
                                     <Badge className="bg-white text-[#0070BA] font-medium">
                                         Not Connected
                                     </Badge>
@@ -280,14 +272,14 @@ export default function FinanceForm({userDetails}: Props) {
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
-                                {!userDetails?.connectedAccountId ? 
+                                {!userDetails?.paypalId ? 
                                 <p className="text-xs md:text-sm"> You haven't connected your PayPal account yet. Connect your account to start accepting payments.</p> 
                                 :
-                                <p className="text-xs md:text-sm"> Your Stripe account is currently connected and ready to accept payments.</p> 
+                                <p className="text-xs md:text-sm"> Your Paypal account is currently connected and ready to accept payments.</p> 
 
                                 }
                                 <div className="flex items-center justify-between">
-                                {!userDetails?.connectedAccountId ?
+                                {!userDetails?.paypalId ?
                                     <form>
                                         <Button className="bg-white text-[#0070BA] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
                                             Connect PayPal
@@ -319,7 +311,7 @@ export default function FinanceForm({userDetails}: Props) {
                                     />
                                     <h3 className="text-sm md:text-lg font-medium">Lemon Squeezy</h3>
                                 </div>
-                                {!userDetails?.connectedAccountId ?
+                                {!userDetails?.lemonsqueezyId ?
                                     <Badge className="bg-white text-[#F59E0B] font-medium" >
                                         Not Connected
                                     </Badge>
@@ -332,13 +324,13 @@ export default function FinanceForm({userDetails}: Props) {
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
-                                    {!userDetails?.connectedAccountId ? 
+                                    {!userDetails?.lemonsqueezyId ? 
                                         <p className="text-xs md:text-sm">You haven't connected your LemonSqueezy account yet. Connect your account to start accepting payments. </p>
                                         :
                                         <p className="text-xs md:text-sm">Your LemonSqueezy account is currently connected and ready to accept payments. </p>
                                     }
                                 <div className="flex items-center justify-between">
-                                    {!userDetails?.connectedAccountId ? 
+                                    {!userDetails?.lemonsqueezyId ? 
                                     <form>           
                                         <Button className="bg-white text-[#F59E0B] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
                                         Connect LemonSqueezy
@@ -370,7 +362,7 @@ export default function FinanceForm({userDetails}: Props) {
                                     />
                                     <h3 className="text-sm md:text-lg font-medium">Paystack</h3>
                                 </div>
-                                {!userDetails?.connectedAccountId ?
+                                {!userDetails?.paystackId ?
                                 <Badge className="bg-white text-[#00C1A5] font-medium" >
                                     Not Connected
                                 </Badge> : 
@@ -382,13 +374,13 @@ export default function FinanceForm({userDetails}: Props) {
                             </CardHeader>
                             <CardContent>
                                 <div className="space-y-4">
-                                    {!userDetails?.connectedAccountId ? 
+                                    {!userDetails?.paystackId ? 
                                         <p className="text-xs md:text-sm"> You haven't connected your Paystack account yet. Connect your account to start accepting payments. </p>
                                         :
                                         <p className="text-xs md:text-sm">Your Paystack account is currently connected and ready to accept payments. </p>
                                     }
                                 <div className="flex items-center justify-between">
-                                    {!userDetails?.connectedAccountId ? 
+                                    {!userDetails?.paystackId ? 
                                     <form>
                                         <Button className="bg-white text-[#00C1A5] text-xs md:text-sm hover:bg-gray-100" size="sm" variant="outline">
                                             Connect Paystack

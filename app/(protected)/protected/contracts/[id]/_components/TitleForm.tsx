@@ -29,6 +29,7 @@ import { profileConfig } from '@/config/profile';
 import { Input } from '@/components/ui/input';
 import { projectTitleSchema } from '@/lib/validation/project';
 import { updateProjectTitle } from '@/actions/projects/project';
+import { projectConfig } from '@/config/project';
 
 type Props = {
     initialData: {
@@ -67,14 +68,14 @@ export default function TitleForm({initialData, id}: Props) {
             toast({
                 variant: "success",
                 title: "Success",
-                description: (profileConfig.successMessage),
+                description: (projectConfig.projectNameUpdateSuccess),
                 })  
                 location.reload()   
         } else {
             toast({
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",
-                description: (profileConfig.errorMessage),
+                description: (projectConfig.projectNameUpdateError),
                 })
         }
 

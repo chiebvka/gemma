@@ -130,6 +130,33 @@ export type Database = {
           },
         ]
       }
+      invoiceProduct: {
+        Row: {
+          created_at: string
+          id: string
+          name: string | null
+          price: number | null
+          productAmount: number | null
+          quantity: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name?: string | null
+          price?: number | null
+          productAmount?: number | null
+          quantity?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string | null
+          price?: number | null
+          productAmount?: number | null
+          quantity?: number | null
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           created_at: string
@@ -138,12 +165,20 @@ export type Database = {
           duedate: string | null
           id: string
           InvoiceNumber: string | null
+          invoiceProducts: Json | null
+          notes: string | null
           paymentLink: string | null
-          products: string | null
           profile_id: string | null
+          project_id: string | null
           recepient: Json | null
+          recepient_address: string | null
+          recepient_email: string | null
+          recepient_mobile: number | null
+          recepient_name: string | null
           status: boolean | null
+          subTotalAmount: number | null
           tax: number | null
+          totalAmount: number | null
         }
         Insert: {
           created_at?: string
@@ -152,12 +187,20 @@ export type Database = {
           duedate?: string | null
           id: string
           InvoiceNumber?: string | null
+          invoiceProducts?: Json | null
+          notes?: string | null
           paymentLink?: string | null
-          products?: string | null
           profile_id?: string | null
+          project_id?: string | null
           recepient?: Json | null
+          recepient_address?: string | null
+          recepient_email?: string | null
+          recepient_mobile?: number | null
+          recepient_name?: string | null
           status?: boolean | null
+          subTotalAmount?: number | null
           tax?: number | null
+          totalAmount?: number | null
         }
         Update: {
           created_at?: string
@@ -166,12 +209,20 @@ export type Database = {
           duedate?: string | null
           id?: string
           InvoiceNumber?: string | null
+          invoiceProducts?: Json | null
+          notes?: string | null
           paymentLink?: string | null
-          products?: string | null
           profile_id?: string | null
+          project_id?: string | null
           recepient?: Json | null
+          recepient_address?: string | null
+          recepient_email?: string | null
+          recepient_mobile?: number | null
+          recepient_name?: string | null
           status?: boolean | null
+          subTotalAmount?: number | null
           tax?: number | null
+          totalAmount?: number | null
         }
         Relationships: [
           {
@@ -179,6 +230,13 @@ export type Database = {
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]
@@ -291,9 +349,12 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          lemonsqueezyId: string | null
           logoLink: string | null
           paymentLink: string | null
           paymentStatus: boolean | null
+          paypalId: string | null
+          paystackId: string | null
           processor: string | null
           stripe_customer_id: string | null
           stripeConnectLinked: boolean | null
@@ -307,9 +368,12 @@ export type Database = {
           created_at?: string
           email?: string | null
           id: string
+          lemonsqueezyId?: string | null
           logoLink?: string | null
           paymentLink?: string | null
           paymentStatus?: boolean | null
+          paypalId?: string | null
+          paystackId?: string | null
           processor?: string | null
           stripe_customer_id?: string | null
           stripeConnectLinked?: boolean | null
@@ -323,9 +387,12 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          lemonsqueezyId?: string | null
           logoLink?: string | null
           paymentLink?: string | null
           paymentStatus?: boolean | null
+          paypalId?: string | null
+          paystackId?: string | null
           processor?: string | null
           stripe_customer_id?: string | null
           stripeConnectLinked?: boolean | null
@@ -348,16 +415,18 @@ export type Database = {
           created_at: string
           currency: string | null
           deliverable_id: string | null
+          deliverables: Json[] | null
           deposit: number | null
           description: string | null
           due_date: string | null
           id: string
           invoice_id: string | null
           isDraft: boolean | null
+          issueInvoice: boolean | null
           name: string | null
           profile_id: string | null
           receipt_id: string | null
-          signature: string | null
+          signature: boolean | null
           start_date: string | null
           status: string | null
         }
@@ -368,16 +437,18 @@ export type Database = {
           created_at?: string
           currency?: string | null
           deliverable_id?: string | null
+          deliverables?: Json[] | null
           deposit?: number | null
           description?: string | null
           due_date?: string | null
           id?: string
           invoice_id?: string | null
           isDraft?: boolean | null
+          issueInvoice?: boolean | null
           name?: string | null
           profile_id?: string | null
           receipt_id?: string | null
-          signature?: string | null
+          signature?: boolean | null
           start_date?: string | null
           status?: string | null
         }
@@ -388,16 +459,18 @@ export type Database = {
           created_at?: string
           currency?: string | null
           deliverable_id?: string | null
+          deliverables?: Json[] | null
           deposit?: number | null
           description?: string | null
           due_date?: string | null
           id?: string
           invoice_id?: string | null
           isDraft?: boolean | null
+          issueInvoice?: boolean | null
           name?: string | null
           profile_id?: string | null
           receipt_id?: string | null
-          signature?: string | null
+          signature?: boolean | null
           start_date?: string | null
           status?: string | null
         }

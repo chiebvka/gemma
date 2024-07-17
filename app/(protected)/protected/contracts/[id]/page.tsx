@@ -13,6 +13,7 @@ import { fetchDeliverables } from '@/actions/deliverables/deliver';
 import ProjectActions from './_components/ProjectActions';
 import ProjectAmount from './_components/ProjectAmount';
 import TrackingCard from './_components/TrackingCard';
+import IssueInvoice from './_components/IssueInvoice';
 
 type Props = {
   params: {
@@ -34,7 +35,7 @@ export default async function page({params}: Props) {
     .eq( 'id', params?.id)
     .single()
 
-    console.log(project)
+    // console.log(project)
 
     const projectId = project?.id
     // const projectStatus = project?.status
@@ -45,7 +46,7 @@ export default async function page({params}: Props) {
 
     let clients  = await getclients()
     clients = clients || []
-    console.log(clients)
+    // console.log(clients)
 
     let deliverables  = await fetchDeliverables(project?.id)
     deliverables = deliverables || []
@@ -64,8 +65,8 @@ export default async function page({params}: Props) {
     const totalFields = requiredFields.length;
     const completedFields = requiredFields.filter(Boolean).length
 
-    console.log(totalFields)
-    console.log(completedFields)
+    // console.log(totalFields)
+    // console.log(completedFields)
 
     const completionTexts = `(${completedFields}/${totalFields})`
 
@@ -119,7 +120,7 @@ export default async function page({params}: Props) {
               />
 
               
-              <TitleForm 
+              <IssueInvoice 
                 initialData={project}
                 id={project.id}
               />

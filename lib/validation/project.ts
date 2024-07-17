@@ -15,6 +15,18 @@ export const projectNotificationSchema = z.object({
     signature: z.boolean()
 })
 
+export const projectInvoiceSchema = z.object({
+    profile_id: z.string().optional(),
+    project_id: z.string().optional(),
+    id: z.string().optional(),
+})
+
+export const projectInvoiceStatusSchema = z.object({
+    profile_id: z.string().optional(),
+    id: z.string().optional(),
+    issueInvoice: z.boolean()
+})
+
 export const projectDescriptionSchema = z.object({
     description: z.string().min(2, {
         message: "Project Description must be at least 2 characters.",

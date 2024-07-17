@@ -1,5 +1,5 @@
 "use server"
-import { projectAmountSchema, projectClientSchema, projectDescriptionSchema, projectNotificationSchema, projectTitleSchema } from "@/lib/validation/project";
+import { projectAmountSchema, projectClientSchema, projectDescriptionSchema, projectInvoiceSchema, projectInvoiceStatusSchema, projectNotificationSchema, projectTitleSchema } from "@/lib/validation/project";
 import { createClient } from "@/utils/supabase/server";
 import { equal } from "assert";
 import { redirect } from "next/navigation";
@@ -156,6 +156,112 @@ export async function projectNotificationComplete(context:z.infer<typeof project
         .eq("profile_id", user?.id)
 
         return data
+}
+
+export async function projectInvoiceStatus(context:z.infer<typeof projectInvoiceStatusSchema>){
+    const supabase = createClient();
+
+    const project = projectInvoiceStatusSchema.parse(context);
+    const { data: { user }} = await supabase.auth.getUser();
+
+
+
+    const { data: currentProject, error: fetchError } = await supabase
+        .from("projects")
+        .select("issueInvoice")
+        .eq("id", project.id)
+        .eq("profile_id", user?.id)
+        .single();
+
+    if (fetchError) {
+        console.log(fetchError);
+        return null;
+    }
+
+    const previousIssueInvoice = currentProject?.issueInvoice;
+
+    // Update the project issueInvoice field
+    const { data, error } = await supabase
+        .from("projects")
+        .update({
+            issueInvoice: project.issueInvoice
+        })
+        .eq("id", project.id)
+        .eq("profile_id", user?.id)
+        .select()
+        .single();
+
+    if (error) {
+        console.log(error);
+        return null;
+    }
+
+    // Check if the invoice needs to be created
+    if (previousIssueInvoice === null && project.issueInvoice === true) {
+        // Create a new invoice
+        const { data: invoiceData, error: invoiceError } = await supabase
+            .from("invoices")
+            .insert({
+                project_id: project.id,
+                profile_id: user?.id,
+            })
+            .select()
+            .single()
+
+            // return invoiceData
+
+
+            const { data: projectInvoice, error: projectInvoiceError } = await supabase
+            .from("projects")
+            .update({
+                invoice_id: invoiceData?.id
+            })
+            .eq("id", project.id)
+            .eq("profile_id", user?.id)
+            .select()
+            .single();
+
+
+            if (projectInvoiceError) {
+                console.log(projectInvoiceError);
+                return null;
+            }
+            return invoiceData;
+    }
+    return data
+}
+
+
+export async function createProjectInvoice(context: z.infer<typeof projectInvoiceSchema>){
+    const supabase = createClient();
+
+        const project = projectInvoiceSchema.parse(context);
+        const { data: { user }} = await supabase.auth.getUser();
+        const { data, error} = await supabase
+        .from("invoices")
+        .insert({
+            project_id: project.id,
+            profile_id: user?.id
+        })
+        .select()
+        // .single()
+
+        console.log(data)
+        if (error) {
+            console.log(error);
+            return null;
+          }
+          if (data.length > 0) {
+            const insertedProject = data[0];
+            console.log(insertedProject);
+            return insertedProject;
+        } else {
+            console.log("No data returned");
+            return null;
+        }
+
+
+
 }
 
 export async function updateProjectDescription(context:z.infer<typeof projectDescriptionSchema>){

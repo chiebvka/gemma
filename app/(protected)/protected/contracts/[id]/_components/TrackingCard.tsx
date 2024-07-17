@@ -96,7 +96,7 @@ export default function TrackingCard({initialData, id}: Props) {
                     onSubmit={form.handleSubmit(onSubmit)}
                     className='space-y-4'
                 >
-                    <FormField 
+                    {/* <FormField 
                         control={form.control}
                         name='isDraft'
                         render={({ field }) => (
@@ -118,7 +118,7 @@ export default function TrackingCard({initialData, id}: Props) {
                                 <FormMessage />
                             </FormItem>
                         )}
-                    /> 
+                    />  */}
                     <FormField 
                         control={form.control}
                         name='signature'

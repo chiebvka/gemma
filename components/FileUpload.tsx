@@ -8,6 +8,7 @@ import { useRouter, redirect } from 'next/navigation';
 
 import { useToast } from './ui/use-toast';
 import { UploadDropzone } from '@/utils/uploadthing';
+import { cn } from '@/lib/utils';
 
 
 type Props = {}
@@ -23,7 +24,7 @@ export default function FileUpload({ onChange, endpoint }: FileUploadprops) {
   return (
     <UploadDropzone
         endpoint={endpoint}
-        className='w-full aspect-video flex flex-col items-center justify-center border-black ut-label:text-xs'
+        className='w-full aspect-video flex flex-col items-center size-48 relative justify-center border-black ut-label:text-xs'
         onClientUploadComplete={(res: { url: string | undefined; }[]) => {
             onChange(res?.[0].url)
             toast({

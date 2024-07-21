@@ -175,6 +175,7 @@ export type Database = {
           recepient_email: string | null
           recepient_mobile: number | null
           recepient_name: string | null
+          state: string | null
           status: boolean | null
           subTotalAmount: number | null
           tax: number | null
@@ -185,7 +186,7 @@ export type Database = {
           cuurency?: string | null
           discount?: number | null
           duedate?: string | null
-          id: string
+          id?: string
           InvoiceNumber?: string | null
           invoiceProducts?: Json | null
           notes?: string | null
@@ -197,6 +198,7 @@ export type Database = {
           recepient_email?: string | null
           recepient_mobile?: number | null
           recepient_name?: string | null
+          state?: string | null
           status?: boolean | null
           subTotalAmount?: number | null
           tax?: number | null
@@ -219,6 +221,7 @@ export type Database = {
           recepient_email?: string | null
           recepient_mobile?: number | null
           recepient_name?: string | null
+          state?: string | null
           status?: boolean | null
           subTotalAmount?: number | null
           tax?: number | null

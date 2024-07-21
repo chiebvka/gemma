@@ -26,7 +26,7 @@ import {
 import { useToast } from '@/components/ui/use-toast';
 import { LogoFormSchema, ProfileFormSchema } from '@/lib/validation/profile';
 import { profileConfig } from '@/config/profile';
-import { updateBusinessLogo, updateSetup } from '@/actions/setup/updateProfile';
+import { updateBusinessLogo } from '@/actions/setup/updateProfile';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -55,8 +55,6 @@ export default function ImageForm({userDetails}: Props) {
 
     const defaultValues: Partial<BusinessLogoFormValues> = {
       logoLink: userDetails?.logoLink || "",
-
-  
   };
 
   const form = useForm<BusinessLogoFormValues>({
@@ -132,6 +130,7 @@ async function onSubmit(data:BusinessLogoFormValues){
                 <Image
                         alt="upload"
                         fill
+                        sizes='10'
                         className='object-contain size-48 rounded-md'
                         src={userDetails?.logoLink}
                     />

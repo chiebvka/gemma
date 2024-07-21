@@ -10,8 +10,12 @@ const invoiceItem = z.object({
 export const InvoiceEditFormSchema = z.object({
     branding: z.string().min(2, {message: "Please Upload a logo or set an account name"}),
     senderName: z.string().min(2, {message: "Please enter a prefered or set an account name"}),
+    companyName: z.string().min(2, {message: "Please enter a prefered or set an account name"}),
+    companyEmail: z.string().email({message: "Please enter a valid email address"}),
+    companyAddress: z.string().min(2, {message: "Please enter a prefered or set an account name"}),
     senderEmail: z.string().email({message: "Please enter an address or set an account address"}),
-    senderAddress: z.string().min(2, {message: "Please enter an address or set an account address"}),
+    senderAddress: z.string().min(2, {message: "Please enter a valid email address"}),
+    companyMobile: z.number().min(2, {message: "Please enter an mobile or set an account mobile"}),
     senderPhone: z.number().min(2, {message: "Please enter an mobile or set an account mobile"}),
     receipientName: z.string().min(2, {message: "Please enter a prefered or set an account name"}),
     receipientEmail: z.string().email({message: "Please enter an address or set an account address"}),
@@ -23,6 +27,7 @@ export const InvoiceEditFormSchema = z.object({
     itemName: z.string().min(2, {message: "Item name must be 2 or more characters long"}),
     itemQuantity: z.number(),
     itemAmount: z.number(),
+    logoLink: z.string().optional(),
     InvoiceNote: z.string().optional(),
     paymentLink: z.string().url({ message: "Invalid url" })
 })

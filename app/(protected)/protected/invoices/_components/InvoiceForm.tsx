@@ -31,6 +31,7 @@ import {
 import { useFieldArray, useForm } from 'react-hook-form';
 import { InvoiceEditFormSchema } from '../../../../../lib/validation/invoice';
 import * as z from "zod";
+import { ImageIcon, Pencil, PlusCircle } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { BadgeDollarSign, CalendarDays, Plus, UploadCloud, XIcon } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -46,17 +47,25 @@ import {
      CardHeader,
      CardTitle,
     } from '@/components/ui/card';
+import { Tables } from '@/types/supabase';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import FileUpload from '@/components/FileUpload';
 
-type Props = {}
+type Profile = Tables<'profiles'>;
+
+type Props = {
+    profile: Profile
+}
 export const dynamic = "force-dynamic";
 
 type InvoiceEditFormValues = z.infer<typeof InvoiceEditFormSchema>;
 
-export default function InvoiceForm({}: Props) {
+export default function InvoiceForm({profile}: Props) {
 
     const router = useRouter();
     const [isSwitchChecked, setIsSwitchChecked] = useState(true);
+    const [isEditing, setIsEditing] = useState(false)
     const [date, setDate] = React.useState<Date | undefined>(new Date())
     const [invoiceNumber, setInvoiceNumber] = useState<string | null>(null);
   
@@ -71,6 +80,7 @@ export default function InvoiceForm({}: Props) {
     senderEmail: "",
     senderAddress: "",
     senderPhone: 0,
+    logoLink: "",
     receipientName: "",
     receipientEmail: "",
     receipientPhone: 0,
@@ -99,6 +109,8 @@ export default function InvoiceForm({}: Props) {
         return 'INV-' + randomNumber;
     }
 
+
+
     useEffect(() => {
         if (!invoiceNumber) {
             const newInvoiceNumber = generateInvoiceNumber(17890, 577890);
@@ -106,6 +118,10 @@ export default function InvoiceForm({}: Props) {
             form.setValue("InvoiceID", newInvoiceNumber);
         }
     }, [invoiceNumber, form]);
+
+    async function onSubmit(data:InvoiceEditFormValues){
+
+    }
 
 
 
@@ -255,40 +271,136 @@ export default function InvoiceForm({}: Props) {
                             </div>
                             <div className="flex basis-1/2 space-y-3 flex-col">
                                 <div className="flex flex-col justify-end my-3 md:border-l-2 border-black ">
-                                    <FormField
-                                        control={form.control}
-                                        name="branding"
-                                        render={({field}) => (
-                                            <div  className='flex justify-end '>
-                                                <FormItem className=' flex justify-center items-center border-2 border-dashed rounded border-black size-32  space-y-2'>   
-                                                    <label htmlFor='branding' className='flex justify-end '>
-                                                        <FormControl>
-                                                            <div className="flex flex-col cursor-pointer items-center justify-center  border-dashed border-gray-400 rounded">
-                                                                <div className="text-center">
-                                                                    <FormLabel htmlFor="branding" className="flex flex-col items-center gap-2 cursor-pointer"></FormLabel>
-                                                                    <UploadCloud className='mx-auto text-black' aria-hidden='true' size={20} />
-                                                                    <span className='text-xs'>Upload your logo</span>
-                                                                    <Input type='file' id="branding"  className='sr-only' {...field} />
-                                                                </div>
+                                    {profile?.logoLink  ? (
+                                        <div className='flex justify-end'>
+                                            <div className='relative aspect-video border border-dashed border-black rounded-lg mt-2 items-center justify-center size-32  bg-slate-200 '>
+                                            <Image
+                                                alt="upload"
+                                                fill
+                                                sizes='10'
+                                                className='object-cover size-48 rounded-md'
+                                                src={profile?.logoLink}
+                                            />
+                                            </div>
+                                        </div>
+                                    )
+                                    :  (
+                                        <FormField
+                                            control={form.control}
+                                            name="logoLink"
+                                            render={({field}) => (
+                                                <div  className='flex justify-end '>
+                                                    <FormItem className=''>   
+                                                        <label htmlFor='branding' className='flex justify-end '>
+                                                            <FormControl>
+                                                            <div>
+                                                                <FileUpload 
+                                                                    endpoint='imageUploader'
+                                                                    onChange={(url) => {
+                                                                        if(url) {
+                                                                        // onSubmit({logoLink: url });
+                                                                        }
+                                                                        setIsEditing(false)
+                                                                    }}
+                            
+                                                                /> 
+                                                                {/* <div className="text-xs text-muted-foreground mt-4">
+                                                                    16:9 aspect ratio recommended
+                                                                </div> */}
                                                             </div>
+                                                                {/* <div className="flex flex-col cursor-pointer items-center justify-center  border-dashed border-gray-400 rounded">
+                                                                    <div className="text-center">
+                                                                        <FormLabel htmlFor="branding" className="flex flex-col items-center gap-2 cursor-pointer"></FormLabel>
+                                                                        <UploadCloud className='mx-auto text-black' aria-hidden='true' size={20} />
+                                                                        <span className='text-xs'>Upload your logo</span>
+                                                                        <Input type='file' id="branding"  className='sr-only' {...field} />
+                                                                    </div>
+                                                                </div> */}
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </label>  
+                                                    </FormItem>
+                                                </div>
+                                            )}
+                                        />
+                                    )
+                                    }
+                                    <div className="flex my-3 justify-end">
+                                        <span className="flex flex-col w-7/12 space-y-2 items-end ">
+                                            {profile?.companyName ?
+                                                <p className='font-bold'>{profile?.companyName}</p>
+                                             :
+                                             <FormField
+                                                control={form.control}
+                                                name="companyName"
+                                                render={({field}) => (
+                                                    <FormItem className='w-full space-y-2'>     
+                                                        <FormControl>
+                                                        <Input placeholder="Client or Business Address" {...field} />
                                                         </FormControl>
                                                         <FormMessage />
-                                                    </label>  
-                                                </FormItem>
-                                            </div>
-                                        )}
-                                    />
-                                    <div className="flex justify-end">
-                                        <span className="flex flex-col items-end ">
-                                            <p className='font-bold'>ABC Company</p>
-                                            <p className='font-light text-xs'>ABC Email</p>
-                                            <p className='font-light text-xs'>ABC Address</p>
-                                            <p className='font-light text-xs'>ABC Mobile</p>
+                                                    </FormItem>
+                                                )}
+                                            />
+
+                                             }
+                                             {profile?.companyEmail ? 
+                                              <p className='font-light text-xs'>{profile?.companyEmail}</p>
+                                              :
+                                              <FormField
+                                                    control={form.control}
+                                                    name="companyEmail"
+                                                    render={({field}) => (
+                                                        <FormItem className='w-full space-y-2'>     
+                                                            <FormControl>
+                                                            <Input placeholder="Client or Business Address" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                              }
+                                               {profile?.companyMobile ? 
+                                              <p className='font-light text-xs'>{profile?.companyMobile}</p>
+                                              :
+                                              <FormField
+                                                    control={form.control}
+                                                    name="companyMobile"
+                                                    render={({field}) => (
+                                                        <FormItem className='w-full space-y-2'>     
+                                                            <FormControl>
+                                                            <Input placeholder="Client or Business Address" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                              }
+                                               {profile?.companyAddress ? 
+                                              <p className='font-light text-xs'>{profile?.companyAddress}</p>
+                                              :
+                                              <FormField
+                                                    control={form.control}
+                                                    name="companyAddress"
+                                                    render={({field}) => (
+                                                        <FormItem className='w-full space-y-2'>     
+                                                            <FormControl>
+                                                            <Input placeholder="Client or Business Address" {...field} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                              }
+                                          
                                         </span>
 
                                     </div>
 
-                                    <div className="flex items-center space-x-2 mt-3 justify-end">
+
+                                    {/** Invoice ID only comes up after invoice has been created and only shows up on the individual inoice/receipt page  */}
+
+                                    {/* <div className="flex items-center space-x-2 mt-3 justify-end">
                                         <p className="font-bold">Invoice Number: </p>
                                         <FormField
                                             control={form.control}
@@ -302,10 +414,7 @@ export default function InvoiceForm({}: Props) {
                                                 </FormItem>
                                             )}
                                         />
-                                        {/* <div className="border px-3 border-black">
-                                            INV 00012
-                                        </div> */}
-                                    </div>
+                                    </div> */}
                   
 
                                 </div>
@@ -342,7 +451,11 @@ export default function InvoiceForm({}: Props) {
                                             mode="single"
                                             selected={date}
                                             // selected={field.value}
-                                            onSelect={field.onChange}                          
+                                            onSelect={field.onChange}  
+                                            disabled={(date) =>
+                                                date.getTime() < new Date().setHours(0, 0, 0, 0) // Disable dates before today
+                                                // date > new Date() || date < new Date("1900-01-01")
+                                              }                        
                                             initialFocus
                                         />
                                         </PopoverContent>

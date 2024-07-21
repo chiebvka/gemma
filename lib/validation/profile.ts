@@ -4,13 +4,13 @@ import { z } from "zod";
 
 export const ProfileFormSchema = z.object({
     userName: z.string().optional(),
-    email: z.string(),
+    id: z.string().optional(),
     companyName: z.string().min(2, {
         message: "Business Name must be at least 2 characters.",
       }),
     companyEmail: z.string().email({ message: "Invalid email address" }),
-    companyMobile: z.string().optional(),
-    companyAddress: z.string().optional(),
+    companyMobile: z.string(),
+    companyAddress: z.string(),
     logoLink: z.string().optional(),
     paymentStatus: z.boolean().optional(),
 })
@@ -26,6 +26,7 @@ export const CompanyFormSchema = z.object({
     companyEmail: z.string().email({ message: "Invalid email address" }),
     companyMobile: z.string().optional(),
     companyAddress: z.string().optional(),
+    id: z.string().optional()
 })
 
 export const CompanyNameFormSchema = z.object({

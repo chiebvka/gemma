@@ -1,15 +1,35 @@
 "use server"
 
-import { profileLogoSchema, profileNameSchema, profileSchema } from "@/lib/validation/profile";
+import { CompanyFormSchema, ProfileFormSchema, profileLogoSchema, profileNameSchema, profileSchema } from "@/lib/validation/profile";
 import { createClient } from "@/utils/supabase/server";
 import { z } from "zod";
 
+export async function fetchUser(){
+  const supabase = createClient();
+  try {
+    const {data: { user } } = await supabase.auth.getUser();
+    const { data: userDetails, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .match({id: user?.id})
+    .select()
+    .single()
+
+    return userDetails
 
 
-export async function updateSetup(context: z.infer<typeof profileSchema>){
+
+
+  } catch (error) {
+      console.log(error);
+      return null;
+  }
+}
+
+export async function updateProfileSetup(context: z.infer<typeof CompanyFormSchema>){
     const supabase = createClient();
-    try {
-        const profile = profileSchema.parse(context);
+
+        const profile = CompanyFormSchema.parse(context);
         const { data, error } = await supabase
         .from("profiles")
         .update({
@@ -17,21 +37,13 @@ export async function updateSetup(context: z.infer<typeof profileSchema>){
           companyMobile: profile.companyMobile,
           companyAddress: profile.companyAddress,
         })
-        .eq("id", profile.id);
+        .eq("id", profile.id)
+        .select()
+        .single()
   
-      if (error) {
-        console.log(error);
-        return false;
-      }
-      return true;
+        console.log(data)
+      return data;
         
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            console.log(error);
-            return false;
-          }
-          return false;
-    }
 }
 
 export async function updateBusinessName(context: z.infer<typeof profileNameSchema>){

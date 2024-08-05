@@ -8,6 +8,7 @@ const invoiceItem = z.object({
 })
 
 export const InvoiceEditFormSchema = z.object({
+    id: z.string().optional(),
     // branding: z.string().min(2, {message: "Please Upload a logo or set an account name"}),
     // senderName: z.string().min(2, {message: "Please enter a prefered or set an account name"}),
     // senderPhone: z.number().min(2, {message: "Please enter an mobile or set an account mobile"}),
@@ -25,7 +26,7 @@ export const InvoiceEditFormSchema = z.object({
     InvoiceID: z.string().optional(),
     tax: z.number().min(0,{message: "Tax must be at least 0"}).max(100, {message: "Tax cannot be more than 100%"}),
     subTotalAmount: z.number().optional(),
-    totalAmount: z.number().optional(),
+    totalAmount: z.number(),
     project_id: z.string().optional(),
     profile_id: z.string().optional(),
     notes: z.string().optional(),

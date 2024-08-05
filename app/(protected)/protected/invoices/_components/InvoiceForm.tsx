@@ -59,7 +59,7 @@ import { Tables } from '@/types/supabase';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import FileUpload from '@/components/FileUpload';
-import { createInvoice } from '@/actions/invoice/invoices';
+import { createInvoice, payInvoice } from '@/actions/invoice/invoices';
 import { projectConfig } from '@/config/project';
 
 type Profile = Tables<'profiles'>;
@@ -67,6 +67,13 @@ type Profile = Tables<'profiles'>;
 type Props = {
     profile: Profile
 }
+
+type InvoiceProduct = {
+    itemName: string;
+    itemQuantity: number;
+    itemPrice: number;
+    itemAmount: number;
+};
 export const dynamic = "force-dynamic";
 
 type InvoiceEditFormValues = z.infer<typeof InvoiceEditFormSchema>;
@@ -82,11 +89,41 @@ export default function InvoiceForm({profile}: Props) {
     const [invoiceNumber, setInvoiceNumber] = useState<string | null>(null);
   
 
+
+    // const calculateTotal = (products, tax) => {
+    //     const subtotal = products.reduce((sum, product) => sum + (product.itemAmount || 0), 0);
+    //     const taxAmount = subtotal * (tax / 100);
+    //     return subtotal + taxAmount;
+    // };
+    const calculateTotal = (products: InvoiceProduct[], tax: number): number => {
+        const subtotal = products.reduce((sum: number, product: InvoiceProduct) => sum + (product.itemAmount || 0), 0);
+        const taxAmount = subtotal * (tax / 100);
+        return subtotal + taxAmount;
+    };
+
+    const calculateTotalAmount = (): number => {
+        const invoiceProducts = form.watch('invoiceProducts') || [];
+        const subtotal = invoiceProducts.reduce((sum, product) => sum + (product.itemAmount || 0), 0);
+        const tax = form.watch('tax') || 0;
+        return subtotal + (subtotal * tax / 100);
+    };
+
+    // const calculateTotalAmount = () => {
+    //     const subtotal = form.watch('invoiceProducts').reduce((sum, product) => sum + (product.itemAmount || 0), 0);
+    //     const tax = form.watch('tax') || 0;
+    //     return subtotal + (subtotal * tax / 100);
+    // };
+
+    const defaultProducts = [
+        {itemName: "First Item", itemQuantity: 1, itemPrice: 200.00, itemAmount: 200.00},
+        {itemName: "Second Item", itemQuantity: 2, itemPrice: 189.00, itemAmount: 378.00},
+    ];
+
+    const defaultTax = 1.50;
+    
+
     const defaultValues: Partial<InvoiceEditFormValues> = {
-        invoiceProducts: [
-            {itemName: "First Item", itemQuantity: 1, itemPrice: 200.00, itemAmount: 200.00},
-            {itemName: "Second Item", itemQuantity: 2, itemPrice: 189.00,  itemAmount: 378.00},
-        ],
+        invoiceProducts: defaultProducts,
 
         companyName: "",
         companyEmail: "",
@@ -101,6 +138,9 @@ export default function InvoiceForm({profile}: Props) {
         dueDate: new Date(),
         notes: "",
         paymentLink: "",
+        tax: defaultTax,
+        subTotalAmount: defaultProducts.reduce((sum, product) => sum + product.itemAmount, 0),
+        totalAmount: calculateTotal(defaultProducts, defaultTax)
     }
 
 
@@ -197,6 +237,30 @@ export default function InvoiceForm({profile}: Props) {
     const handleSwitchChange = (event: any) => {
         setIsSwitchChecked(!isSwitchChecked);
     };
+
+
+    const handlePayment = async () => {
+        if (form.formState.isValid) {
+          const invoiceData = form.getValues();
+          const response = await payInvoice(invoiceData);
+          if (response?.url) {
+            window.location.href = response.url;
+          } else {
+            toast({
+              variant: "destructive",
+              title: "Error",
+              description: "Failed to create checkout session",
+            });
+          }
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Form Error",
+            description: "Please fill out all required fields",
+          });
+        }
+      };
+
 
     return (
         <>
@@ -494,12 +558,13 @@ export default function InvoiceForm({profile}: Props) {
                                             render={({field}) => (
                                             <FormItem className='w-full'>     
                                                 <FormControl>
-                                                <Input type='number' placeholder="Quantity" {...field} onChange={(e) => {
+                                                <Input type='number' className="no-spinner" placeholder="Quantity" {...field} onChange={(e) => {
                                                     const quantity = parseInt(e.target.value, 10) || 0;
                                                     const price = parseFloat(String(form.getValues(`invoiceProducts.${index}.itemPrice`))) || 0; 
                                                     const amount = quantity * price
                                                     form.setValue(`invoiceProducts.${index}.itemQuantity`, quantity );
                                                     form.setValue(`invoiceProducts.${index}.itemAmount`, amount );
+                                                    form.setValue('totalAmount', calculateTotalAmount());
                                                     field.onChange(e);
                                                 }} />
                                                 {/* <Input type='number' placeholder="Quantity" {...field} onChange={(e) => handleItemQuantityChange(index, parseInt(e.target.value))} /> */}
@@ -516,12 +581,13 @@ export default function InvoiceForm({profile}: Props) {
                                             render={({field}) => (
                                             <FormItem className='w-full'>     
                                                 <FormControl>
-                                                <Input type='number' placeholder="Price" {...field} onChange={(e) => {
+                                                <Input type='number' className="no-spinner" placeholder="Price" {...field} onChange={(e) => {
                                                     const price = parseFloat(e.target.value) || 0;
                                                     const quantity = parseInt(String(form.getValues(`invoiceProducts.${index}.itemQuantity`)), 10) || 0;
                                                     const amount = quantity * price;
                                                     form.setValue(`invoiceProducts.${index}.itemPrice`, price);
                                                     form.setValue(`invoiceProducts.${index}.itemAmount`, amount);
+                                                    form.setValue('totalAmount', calculateTotalAmount());
                                                     field.onChange(e);
                                                 }} />
                                                 {/* <Input type='number' placeholder="Price" {...field} onChange={(e) => handleItemPriceChange(index, parseFloat(e.target.value))}  /> */}
@@ -568,9 +634,9 @@ export default function InvoiceForm({profile}: Props) {
                             </Table>
 
                             <div className="flex border-2 border-red-600 mx-auto mt-3 justify-end ">
-                                <div className="flex items-center  justify-end flex-col space-y-3">
-                                    <div className="flex items-center  justify-between space-x-3">
-                                        <p className='flex justify-start'>Subtotal</p>
+                                <div className="flex  border-2 items-center border-green-600 justify-items-end flex-col space-y-3">
+                                    <div className="flex items-center  justify-center space-x-2">
+                                        <p className='flex items-start justify-start w-16 text-sm'>Subtotal</p>
                                         <div className="flex justify-end">
                                             <FormField 
                                                 control={form.control}
@@ -579,8 +645,9 @@ export default function InvoiceForm({profile}: Props) {
                                                     <FormItem>
                                                         <FormControl>
                                                             <Input
+                                                              className="no-spinner"
                                                                 {...field}
-                                                                value={form.watch('invoiceProducts')?.reduce((sum, product) => sum + (product.itemAmount || 0), 0).toFixed(2)}
+                                                                value={(form.watch('invoiceProducts') || []).reduce((sum, product) => sum + (product.itemAmount || 0), 0).toFixed(2)}
                                                                 readOnly
                                                             />
                                                         </FormControl>
@@ -590,8 +657,8 @@ export default function InvoiceForm({profile}: Props) {
                                         </div>
                         
                                     </div>
-                                    <div className="flex items-center  justify-between space-x-3">
-                                        <p className='flex justify-start'>Tax (%)</p>
+                                    <div className="flex items-center  justify-center space-x-2">
+                                        <p className='flex items-start justify-start w-16 text-sm'>Tax (%)</p>
                                         <div className="flex justify-end">
                                             <FormField
                                                 control={form.control}
@@ -602,22 +669,34 @@ export default function InvoiceForm({profile}: Props) {
                                                         <Input
                                                             {...field}
                                                             type="number"
+                                                            className="no-spinner"
                                                             // min="0"
                                                             // max="100"
                                                             step="0.01"
+                                                            placeholder='1.50'
+                                                            // onChange={(e) => {
+                                                            //     let value = parseFloat(e.target.value);
+                                                            //     if (isNaN(value)) {
+                                                            //     value = 0;
+                                                            //     } else if (value > 100) {
+                                                            //     value = 100;
+                                                            //     }
+                                                            //     e.target.value = value.toString();
+                                                            //     field.onChange(e);
+                                                            //     const taxValue = parseFloat(e.target.value) || 0;
+                                                            //     const subtotal = form.watch('invoiceProducts')?.reduce((sum, product) => sum + (Number(product?.itemAmount) || 0), 0) || 0;
+                                                            //     form.setValue('totalAmount', calculateTotalAmount());
+                                                            //     form.setValue('totalAmount', total);
                                                             onChange={(e) => {
                                                                 let value = parseFloat(e.target.value);
                                                                 if (isNaN(value)) {
-                                                                value = 0;
+                                                                    value = 0;
                                                                 } else if (value > 100) {
-                                                                value = 100;
+                                                                    value = 100;
                                                                 }
                                                                 e.target.value = value.toString();
                                                                 field.onChange(e);
-                                                                const taxValue = parseFloat(e.target.value) || 0;
-                                                                const subtotal = form.watch('invoiceProducts')?.reduce((sum, product) => sum + (Number(product?.itemAmount) || 0), 0) || 0;
-                                                                const total = subtotal + (subtotal * taxValue / 100);
-                                                                form.setValue('totalAmount', total);
+                                                                form.setValue('totalAmount', calculateTotalAmount());
                                                             }}
                                                         />
                                                     </FormControl>
@@ -626,8 +705,8 @@ export default function InvoiceForm({profile}: Props) {
                                             />
                                         </div>
                                     </div>
-                                    <div className="flex items-center  justify-between space-x-3">
-                                        <p className='flex justify-start'>Total</p>
+                                    <div className="flex items-center  justify-center space-x-2">
+                                        <p className='flex items-start justify-start w-16 text-sm'>Total</p>
                                         <div className="flex justify-end">
                                             <FormField
                                                 control={form.control}
@@ -635,7 +714,7 @@ export default function InvoiceForm({profile}: Props) {
                                                 render={({ field }) => (
                                                 <FormItem>
                                                     <FormControl>
-                                                    <Input {...field} readOnly />
+                                                    <Input  {...field}    value={calculateTotalAmount().toFixed(2)}  readOnly />
                                                     </FormControl>
                                                 </FormItem>
                                                 )}
@@ -675,17 +754,11 @@ export default function InvoiceForm({profile}: Props) {
                                     Please click the button below to make your payement 
                                     </CardDescription>
                                 </CardHeader>
-                                <CardContent>
-                                <div>
-                
-                                    <Label
-                                    htmlFor="paypal"
-                                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                                    >
-                                    <BadgeDollarSign className="mb-3 h-6 w-6" />
-                                    Paypal
-                                    </Label>
-                                </div>
+                                <CardContent >
+                                    <span onClick={handlePayment} className="flex flex-col cursor-pointer items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
+                                        <BadgeDollarSign className="mb-3 h-6 w-6" />
+                                        Paypal
+                                    </span>
                                 </CardContent>
                             </Card>
                             <div className="h-8 rounded-b-lg mb-3 bg-black w-full"></div>

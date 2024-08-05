@@ -4,6 +4,7 @@ import DataTable from './_components/DataTable'
 import { columns } from './_components/Column'
 import PageHeadings from '../../../../components/PageHeadings';
 import TableLoading from '@/components/TableLoading';
+import { getIssuedInvoices } from '@/actions/invoice/invoices';
 
 type Props = {}
 let emptystate = true
@@ -47,7 +48,11 @@ const data: Payment[] = [
   },
 ]
 
-export default function page({}: Props) {
+export default async function page({}: Props) {
+
+  let data = await getIssuedInvoices()
+  console.log(data)
+
   return (
     <div  className="flex-1 w-full p-4 max-w-5xl mx-auto border-2 border-green-600 flex flex-col space-x-2 items-center">
       <TableLoading />
